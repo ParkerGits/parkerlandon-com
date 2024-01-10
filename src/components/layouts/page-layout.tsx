@@ -1,20 +1,14 @@
 import { fontBody, fontHeading, fontLogo } from "@/lib/fonts";
-import { cn } from "@/lib/utils";
-import PageHeader from "../page-header";
-import { ReactNode } from "react";
 import PageFooter from "../page-footer";
-import { TitleText } from "../typography/title-text";
+import PageHeader from "../page-header";
+import { cn } from "@/lib/utils";
+import { ReactNode } from "react";
 
-interface MDXMetadata {
-  title: string;
+interface PageLayoutProps {
+  children?: ReactNode;
 }
 
-interface MDXLayoutProps {
-  children: ReactNode;
-  frontmatter: MDXMetadata;
-}
-
-export default function MdxLayout({ children, frontmatter }: MDXLayoutProps) {
+export default function PageLayout({ children }: PageLayoutProps) {
   return (
     <div
       className={cn(
@@ -26,10 +20,7 @@ export default function MdxLayout({ children, frontmatter }: MDXLayoutProps) {
     >
       <div className="flex flex-col items-center w-full">
         <PageHeader />
-        <main className="max-w-2xl">
-          <TitleText>{frontmatter.title}</TitleText>
-          {children}
-        </main>
+        {children}
       </div>
       <PageFooter />
     </div>

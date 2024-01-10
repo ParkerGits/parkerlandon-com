@@ -11,7 +11,7 @@ export default function LogoHeading() {
           alt="Lordly Logo"
           className="w-auto h-[8vh] aspect-square"
         />
-        <h1 className="font-logo text-xl hidden sm:block group-hover:text-highlight-hover">
+        <h1 className="font-logo text-xl hidden sm:block group-hover:text-highlight">
           Parker&apos;s Digital Domain
         </h1>
       </div>

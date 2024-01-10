@@ -9,9 +9,9 @@ import {
 } from "./ui/navigation-menu";
 
 const NAVIGATION_MENU_ITEMS = [
-  { title: "Portfolio", href: "/test" },
-  { title: "Blog", href: "/test" },
-  { title: "About", href: "/test" },
+  { title: "Portfolio", href: "/portfolio" },
+  { title: "Blog", href: "/blog" },
+  { title: "About", href: "/about" },
 ];
 
 export default function PageHeader() {

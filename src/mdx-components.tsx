@@ -23,10 +23,17 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       />
     ),
     a: ({ href, children }) => {
+      if (href && href.startsWith("/")) {
+        return (
+          <Link href={href}>
+            <AnchorText>{children}</AnchorText>
+          </Link>
+        );
+      }
       return (
-        <Link href={href ?? ""}>
+        <a href={href}>
           <AnchorText>{children}</AnchorText>
-        </Link>
+        </a>
       );
     },
     ...components,
