@@ -36,6 +36,9 @@
 
     --highlight: #ec4899;
     --highlight-hover: #be185d;
+
+    --highlight-secondary: #fcd34d;
+    --highlight-secondary-hover: #f59e0b;
   }
 
   .dark {
@@ -69,6 +72,9 @@
 
     --highlight: #ec4899;
     --highlight-hover: #be185d;
+
+    --highlight-secondary: #fbbf24;
+    --highlight-secondary-hover: #d97706;
   }
 }
 

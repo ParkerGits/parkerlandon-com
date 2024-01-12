@@ -1,14 +1,11 @@
 import { ReactNode } from "react";
 import { TitleText } from "../typography/title-text";
 import PageLayout from "./page-layout";
-
-interface Metadata {
-  title?: string | undefined;
-}
+import { PageMetadata } from "@/lib/types/PageMetadata";
 
 interface DefaultLayoutProps {
   children?: ReactNode;
-  meta: Metadata;
+  meta: PageMetadata;
 }
 
 export default function DefaultLayout({ children, meta }: DefaultLayoutProps) {

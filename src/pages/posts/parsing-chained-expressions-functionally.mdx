@@ -1,0 +1,110 @@
+---
+title: Parsing Chained Expressions, Functionally 🔗
+topics: haskell, functional programming, parsers
+description: When combining XState with React Context to provide global state to your application, you may find it tricky to implement the typing that you want.
+postnum: 10
+---
+
+Recently, I've been developing a command-line JSON processor called [hson](https://github.com/ParkerGits/hson). hson is implemented in Haskell and comprises a CLI and interpreter for manipulating JSON data with the hson language.
+
+hson takes two inputs, an hson script and some JSON data, and enables the user to format the JSON data via the hson script. For example, given the following JSON file,
+
+### sinistcha.json
+
+```json
+{
+  "name": "sinistcha",
+  "order": 1097,
+  "species": {
+    "name": "sinistcha",
+    "url": "https://pokeapi.co/api/v2/pokemon-species/1013/"
+  },
+  "sprites": {
+    "front_default": "https://raw.githubusercontent.com/pokeapi/sprites/master/sprites/pokemon/1013.png"
+  }
+}
+```
+
+we can get the `front_default` sprite like so:
+
+```bash
+$ hson "$.sprites.front_default" --jsonfile "sinistcha.json"
+https://raw.githubusercontent.com/pokeapi/sprites/master/sprites/pokemon/1013.png
+```
+
+The semantics of the above hson script `$.sprites.front_default` are intuitive:
+
+1. The contents of `sinistcha.json` are parsed and bound to the `$` identifier.
+2. The `sprites` field of `sinistcha.json` is accessed.
+3. The `front_default` field of `sprites` is accessed.
+4. hson prints the value of the `front_default` field.
+
+The meat of this expression is parsed in the `call` function of my recursive-descent parser. This function is also responsible for parsing
+
+- "Get" expressions that access a property on an object, like `$.sprites`.
+- "Call" expressions that execute code within a callable value. For example, `keys()` executes the `keys` function.
+- "Index" expressions that access an element at an index within an indexable value. For example, `items[0]` accesses the index `0` in `items`.
+
+Moreover, the `call` function must consider that each of these expressions can be _chained_ or _nested_. As we saw above, Get expressions can be chained to access properties within properties (e.g., `$.sprites.front_default`). We may also have a callable value that returns a callable value when called, and an indexable value that returns an indexable value when indexed, etc. Thus, our parser must be able to handle expressions like the following
+
+- `logging.getLogs()[0].toJSON()`
+- `listOfFunctions[0]().result`
+
+In total, the definition of `call` is as follows.
+
+```hs
+call :: HSONParser Expr
+call = do
+  expr <- primary
+  try (threadl expr <$> many (try parseCall <|> try parseIndex <|> parseGet))
+    <|> return expr
+ where
+  threadl = foldl (&)
+```
+
+At first glance, this definition may seem daunting. However, the responsibilities of `call` are just as I shared above.
+
+1. Parse a _primary expression_, `expr`, which will evaluate to the value being called/indexed/accessed by the call/index/get expression.
+2. If `expr` is not called, indexed, or accessed, simply return `expr`
+3. Otherwise, handle _many_ calls, indexes, or property accesses.
+
+```hs
+GetExpr
+( Get
+  { object =
+      GetExpr
+        ( Get
+            { object =
+                DollarExpr
+                  ( Dollar
+                      { dollarTok =
+                          Token
+                          { tokenType = TokenDollar
+                          , literal = Nothing
+                          , pos = (line 1, column 2)
+                          }
+                      }
+                  )
+            , property =
+                Token
+                  { tokenType = TokenIdentifier
+                  , literal = Just sprites
+                  , pos = (line 1, column 10)
+                  }
+            }
+        )
+  , property =
+      Token
+        { tokenType = TokenIdentifier
+        , literal = Just front_default
+        , pos = (line 1, column 24)
+        }
+  }
+)
+```
+
+import DefaultLayout from '../../components/layouts/default-layout'
+
+export default function BlogPage({ children }) {
+	return <DefaultLayout meta={frontmatter}>{children}</DefaultLayout>
+}

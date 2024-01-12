@@ -1,5 +1,5 @@
 import Image from "next/image";
-import LordlyLogo from "../../public/logo.svg";
+import LordlyLogo from "../../../../public/logo.svg";
 import Link from "next/link";
 
 export default function LogoHeading() {

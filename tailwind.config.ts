@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
+import { fontFamily, screens } from "tailwindcss/defaultTheme";
 
 const config = {
   darkMode: ["class"],
@@ -22,6 +22,10 @@ const config = {
       logo: ["var(--font-logo)", ...fontFamily.serif],
       heading: ["var(--font-heading)", ...fontFamily.serif],
       body: ["var(--font-body)", ...fontFamily.sans],
+    },
+    screens: {
+      xs: "475px",
+      ...screens,
     },
     extend: {
       borderRadius: {
@@ -80,6 +84,10 @@ const config = {
         highlight: {
           DEFAULT: "var(--highlight)",
           hover: "var(--highlight-hover)",
+        },
+        "highlight-secondary": {
+          DEFAULT: "var(--highlight-secondary)",
+          hover: "var(--highlight-secondary-hover)",
         },
       },
     },

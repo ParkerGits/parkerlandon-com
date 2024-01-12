@@ -23,8 +23,6 @@
 // import Smartsheet2022Proofing from '../../public///images/portfolio/smartsheet2022/proofing.png'
 // import { StaticImageData } from 'next/image'
 
-import { table } from "console";
-
 export enum PortfolioItemTag {
   // Styling
   SASS = "sass",
@@ -51,10 +49,19 @@ export enum PortfolioItemTag {
   // Database
   MYSQL = "mysql",
   POSTGRESQL = "postgresql",
+  SQLITE = "sqlite",
   FIREBASE = "firebase",
   // Services
   DOCKER = "docker",
   REST_API = "rest api",
+  // Processes
+  AGILE = "agile",
+  // Program Type
+  FULLSTACK = "fullstack",
+  FRONTEND = "frontend",
+  CLI = "cli",
+  INTERPRETER = "interpreter",
+  PACKAGE = "package",
 }
 
 export type PortfolioItem = {
@@ -70,12 +77,15 @@ export type PortfolioItem = {
 export const projects: PortfolioItem[] = [
   {
     title: "hngr",
+    shortDescription:
+      "Hngr is a social platform for foodies, built for iOS, that has become my most ambitious application development and engineering management project.",
     longDescription:
       "Hngr is a peer-to-peer restaurant recommendation and review platform. Like other vertical social platforms such as Goodreads for books and Letterboxd for movies, hngr provides a social space for foodies to share and discover restaurant experiences. I was the sole developer of hngr for the first four months, implementing the groundwork features and architecture for the application. Now, I lead three other developers on the project as manager and scrummaster; we meet for standup three times weekly and work in 2-week sprints. We've implemented hngr with Expo (React Native) and TypeScript on the frontend, Node.js with TypeScript and Express on the backend, and services like Planetscale to store app data and the Foursquare Places API for restaurant data. The team plans to launch hngr to our waitlist of users sometime in the winter or spring. ",
     emoji: "🍽️",
     //images: [HngrList, HngrSearch],
     links: [{ text: "Check out the launch page!", url: "https://hngrapp.xyz" }],
     tags: [
+      PortfolioItemTag.FULLSTACK,
       PortfolioItemTag.REACT_NATIVE,
       PortfolioItemTag.TYPESCRIPT,
       PortfolioItemTag.TAILWINDCSS,
@@ -84,10 +94,96 @@ export const projects: PortfolioItem[] = [
       PortfolioItemTag.EXPRESSJS,
       PortfolioItemTag.MYSQL,
       PortfolioItemTag.REST_API,
+      PortfolioItemTag.AGILE,
     ],
   },
   {
-    title: "Knowted Participation Tracking App",
+    title: "hson",
+    shortDescription:
+      "hson is a scripting language for processing and formatting JSON data. The hson program is a CLI written in Haskell that performs parsing and interpreting.",
+    longDescription: "",
+    emoji: "🪄",
+    //images: [HngrList, HngrSearch],
+    links: [{ text: "Check out the launch page!", url: "https://hngrapp.xyz" }],
+    tags: [
+      PortfolioItemTag.HASKELL,
+      PortfolioItemTag.CLI,
+      PortfolioItemTag.INTERPRETER,
+    ],
+  },
+  {
+    title: "gograph",
+    shortDescription:
+      "The gograph package implements graph algorithms and data types in Go. Employs data structures from the gods library to implement common graph algorithms like Shortest Path and Minimum Spanning Tree efficiently.",
+    longDescription: "",
+    emoji: "🔗",
+    //images: [PokecommitEncounter, PokecommitFight],
+    links: [
+      {
+        text: "GitHub repository",
+        url: "https://github.com/ParkerGits/gograph",
+      },
+    ],
+    tags: [PortfolioItemTag.GO],
+  },
+  {
+    title: "gods",
+    shortDescription:
+      "gods is a package of efficient data structures written in Go. The implemented data structures are stack, queue, set, union-find, and binary heap.",
+    longDescription: "",
+    emoji: "🧱",
+    //images: [PokecommitEncounter, PokecommitFight],
+    links: [
+      {
+        text: "GitHub repository",
+        url: "https://github.com/ParkerGits/gods",
+      },
+    ],
+    tags: [PortfolioItemTag.GO],
+  },
+  {
+    title: "Scheme/Prolog Transpiler",
+    shortDescription: "",
+    longDescription: "",
+    emoji: "⚙️",
+    //images: [PokecommitEncounter, PokecommitFight],
+    links: [
+      {
+        text: "GitHub repository",
+        url: "https://github.com/ParkerGits/gods",
+      },
+    ],
+    tags: [PortfolioItemTag.RUST, PortfolioItemTag.INTERPRETER],
+  },
+  {
+    title: "Pokecommit CLI",
+    shortDescription:
+      "Pokecommit is a wrapper for git commit that employs PokeAPI and MySQL to allow users to catch a Pokemon with each commit.",
+    longDescription:
+      "Inspired by my love for Pokemon and a desire to learn the Go programming language, I created this simple CLI wrapper for git commit that allows users to catch a Pokemon with each commit! Pokecommit integrates with PokeAPI to fetch Pokemon data, and uses a local MySQL database to store your team.",
+    emoji: "🦑",
+    //images: [PokecommitEncounter, PokecommitFight],
+    links: [
+      {
+        text: "GitHub repository",
+        url: "https://github.com/ParkerGits/pokecommit",
+      },
+      {
+        text: "PokeAPI",
+        url: "https://pokeapi.co/",
+      },
+    ],
+    tags: [
+      PortfolioItemTag.GO,
+      PortfolioItemTag.SQLITE,
+      PortfolioItemTag.REST_API,
+      PortfolioItemTag.CLI,
+    ],
+  },
+  {
+    title: "Knowted",
+    shortDescription:
+      "Knowted is a student participation tracking application built for instructors. Knowted integrates with Canvas LMS to fetch and update classroom data.",
     longDescription:
       "Inspired by the needs of a professor, I developed a web application called Knowted that streamlines student participation tracking for course instructors in the classroom. By integrating with the popular Canvas Learning Management System, Knowted centralizes student data with a dashboard and facilitates the quick and systematic selection of students for participation. Knowted enables professors to effortlessly grade student interactions and export those grades to the grade book. The application already benefits instructors as it sees growing usage among professors at Seattle Pacific University. The next step of this project is to expand beyond Seattle Pacific University and support instructors at other institutions.",
     emoji: "🙋‍♂️",
@@ -103,6 +199,7 @@ export const projects: PortfolioItem[] = [
       },
     ],
     tags: [
+      PortfolioItemTag.FULLSTACK,
       PortfolioItemTag.REACT,
       PortfolioItemTag.TYPESCRIPT,
       PortfolioItemTag.NEXTJS,
@@ -112,8 +209,10 @@ export const projects: PortfolioItem[] = [
   },
   {
     title: "tends",
+    shortDescription:
+      "My first full-stack application, \"tends,\" helps users manage their tendencies. This application was built as part of an egghead.io 'Portfolio Project Club' for building SaaS applications.",
     longDescription:
-      'My application "tends" helps users manage "quantities" in their lives (e.g., daily calories, screen time, exercise time, etc.). I created tends during an iteration of egghead.io\'s Portfolio Project Club, the goal of which was for each member to design, develop, and document a SaaS application that would serve as an impressive, business-oriented addition to their developer portfolio. Built using Next.js, React, TypeScript, Firebase, and Stripe, the project was my first stab at developing a full-stack application. Users could log into the service via GitHub or Google, and the application would store their quantities in the Firestore database. After finishing the project, I wrote and published a technical case study about my process.',
+      'My application "tends" helps users manage "quantities" in their lives (e.g., daily calories, screen time, exercise time, etc.). I created tends during an iteration of egghead.ios Portfolio Project Club, the goal of which was for each member to design, develop, and document a SaaS application that would serve as an impressive, business-oriented addition to their developer portfolio. Built using Next.js, React, TypeScript, Firebase, and Stripe, the project was my first stab at developing a full-stack application. Users could log into the service via GitHub or Google and create the quantities they wanted to track. The user could then make entries for each quantity and later view summaries of those entries as a graph over time (plotted with React Charts). After finishing the project, I wrote and published a technical case study about my process, which is now available on egghead.io.',
     emoji: "📈",
     //images: [ParkerPoints, ParkerTrend],
     links: [
@@ -127,6 +226,7 @@ export const projects: PortfolioItem[] = [
       },
     ],
     tags: [
+      PortfolioItemTag.FULLSTACK,
       PortfolioItemTag.REACT,
       PortfolioItemTag.TYPESCRIPT,
       PortfolioItemTag.TAILWINDCSS,
@@ -136,8 +236,10 @@ export const projects: PortfolioItem[] = [
   },
   {
     title: "State Management Project Club",
+    shortDescription:
+      "I led Portfolio Project Club in the egghead.io community in which each member to built a project that demonstrates a mastery of State Management in React.",
     longDescription:
-      "Over six weeks, from July to August 2021, I led a Portfolio Project Club in the egghead.io community. The objective of the project club was for each member to design, demonstrate, and document a portfolio project that demonstrates a mastery of State Management in React. The project I developed was an RPG Cutscene in which the animations, events, and dialogue are all controlled by state machines managed by the XState library.",
+      "Over six weeks, from July to August 2021, I led a Portfolio Project Club in the egghead.io community. The objective of the project club was for each member to design, implement, and document a portfolio project that demonstrates a mastery of State Management in React. The project I developed was an RPG Cutscene in which the animations, events, and dialogue are all controlled by state machines managed by the XState library.",
     emoji: "🌵",
     //images: [RPGPortfolio, PortfolioShop],
     links: [
@@ -155,26 +257,13 @@ export const projects: PortfolioItem[] = [
       },
     ],
     tags: [
+      PortfolioItemTag.FRONTEND,
       PortfolioItemTag.REACT,
       PortfolioItemTag.TYPESCRIPT,
       PortfolioItemTag.TAILWINDCSS,
       PortfolioItemTag.NEXTJS,
       PortfolioItemTag.XSTATE,
     ],
-  },
-  {
-    title: "Pokecommit CLI",
-    longDescription:
-      "Inspired by my love for Pokemon and a desire to learn the Go programming language, I created this simple CLI wrapper for git commit that allows users to catch a Pokemon with each commit!",
-    emoji: "🦑",
-    //images: [PokecommitEncounter, PokecommitFight],
-    links: [
-      {
-        text: "GitHub repository",
-        url: "https://github.com/ParkerGits/pokecommit",
-      },
-    ],
-    tags: [PortfolioItemTag.GO, PortfolioItemTag.REST_API],
   },
   {
     title: "Huffman Coding Tree",
@@ -207,6 +296,7 @@ export const projects: PortfolioItem[] = [
       },
     ],
     tags: [
+      PortfolioItemTag.FRONTEND,
       PortfolioItemTag.REACT,
       PortfolioItemTag.TYPESCRIPT,
       PortfolioItemTag.XSTATE,
