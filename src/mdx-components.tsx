@@ -31,7 +31,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         );
       }
       return (
-        <a href={href}>
+        <a href={href} target="_blank">
           <AnchorText>{children}</AnchorText>
         </a>
       );

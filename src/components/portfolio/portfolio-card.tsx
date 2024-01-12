@@ -30,7 +30,7 @@ export default function PortfolioCard({ item }: PortfolioCardProps) {
           <CardDescription>{item.shortDescription}</CardDescription>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-row flex-wrap gap-1 items-center pb-0">
+      <CardContent className="flex flex-row flex-wrap gap-1 items-center pb-0 -mx-2">
         {item.tags.map((tag) => (
           <PortfolioCardTag key={tag} tag={tag} />
         ))}
