@@ -1,0 +1,37 @@
+---
+title: "About Parker"
+---
+
+Hey, I'm Parker Landon 👋
+
+I am currently a senior at Seattle Pacific University pursuing three degrees: Computer Science, Applied Mathematics, and Honors Liberal Arts. Call me crazy (pretentious, maybe), but thanks to the college credits I earned in high school and the overlapping course plans of each major, I expect to graduate without a problem in June 2024.
+
+I am so passionate about these topics and about learning in general. Dedicated studying is one of two primary mechanisms (besides coding) that consistently puts me in the flow state.
+
+I stumbled upon coding in 5th grade when my class would go to the computer lab to work with various educational software. Of course, when the teacher wasn't looking, my friends and I would play Flash games like Adventure Quest and Bloons Tower Defense. When the librarian caught on, she restricted access to those websites. Thus, I had no choice but to find a way to entertain myself offline. I thought, "What if I made my own Flash game website?" So, I lept down the rabbit hole and began learning HTML, CSS, and JavaScript. Although I never actualized the dream of creating a Flash game website, I found writing code entertaining in itself. Plus, the librarian could never restrict my access to Notepad (my then preferred IDE).
+
+Following this introduction to coding, I programmed off and on for a while. I picked up some Python in 8th grade, and in my junior year of high school, I learned Java through my AP Computer Science class. During that year, I also became connected with the folks at [egghead.io](https://egghead.io) and began doing work reviewing older web development courses hosted on their platform. I initially thought that my web development experience from 5th and 6th grade would suffice, but I quickly found myself overwhelmed by the numerous foreign packages and frameworks employed in these courses. While I struggled for some time, I eventually learned how to effectively read documentation and learn independently. It did not take long for me to begin steadily producing course reviews and autonomously fixing code deprecations.
+
+My work at egghead reignited my interest in web development. Throughout my senior year of high school and freshman year of (Zoom) university, I picked up React, TypeScript, and several other essential technologies. Eventually, I participated in a Portfolio Project Club hosted by egghead. The goal of this club was for each member to design and build a web project that would make for an impressive portfolio piece. I built an app called [tends](https://github.com/ParkerGits/tends) that simplified the tracking of quantities (e.g., calories, exercise, etc.) for users. The club also presented the chance to have published a technical case study detailing the design and build process; I eagerly took advantage of that opportunity, and now have my own [technical case study living on egghead.io](https://egghead.io/blog/saas-applicatiodn-with-next-js-stripe-and-firebase).
+
+In the summer following that club, I worked as an intern for egghead.io, taking on GitHub issues, contributing to the site, and continuing to review courses. I also got to lead my own Portfolio Project Club iteration, now focusing on state management in React. During this internship experience, I grew confident as a web developer. As the summer ended and my sophomore year of college began, I felt ready to take on large-scale projects and demanding developer responsibilities.
+
+During the winter term of my sophomore year of college, I began developing a full-stack participation-tracking application for professors (called [knowted](https://knowted.app)) to use in their courses. Essentially, this web application streamlines the participation tracking process for course instructors by integrating with the popular Canvas Learning Management System for querying and mutating student data. You can read more about this project in my [portfolio section](/portfolio) but the general aim is to
+
+- Centralize student participation data
+- Facilitate a systematic approach to selecting a student for participation
+- Enable the quick recording of student participation quality
+- Simplify the exporting of participation grades to the grade book
+- Promote inclusive learning environments and student attentiveness by employing a selection algorithm that prioritizes those who have participated less frequently [test](https://gooogle.com)
+
+Nowadays, this project receives occasional surges of development as I acquire inspiration and time. Ideally, I will the application will be built, tested, and shipped by the end of my junior year.
+
+Alongside the development of knowted during the winter term of my sophomore year, I began applying to countless software engineering summer internships. Eventually, after some 100 applications and several interviews, I landed a software engineering internship with the Content Solutions team at Smartsheet. My task for the summer was to work with my assigned mentor, product managers, designers, UX researchers, and other engineers to design and implement a solution based on user stories and requirements. The technical work primarily comprised frontend development with React, Redux, and TypeScript and backend development with Java Spring and MySQL. Besides facilitating the opportunity to learn these technologies, this experience confirmed my passion for software engineering. I am proud to write now that I will return to Smartsheet for another summer internship.
+
+Looking forward, I foresee that my passions for software will continue to guide me through meaningful challenges and subsequent growth. As I undergo these endeavors, I expect to keep this site updated. For now, you can see what I've created so far in my [portfolio section](/portfolio).
+
+import DefaultLayout from '../components/layouts/default-layout'
+
+export default function BlogPage({ children }) {
+return <DefaultLayout meta={frontmatter}>{children}</DefaultLayout>
+}
