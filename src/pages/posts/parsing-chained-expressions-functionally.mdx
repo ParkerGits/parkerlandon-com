@@ -2,14 +2,12 @@
 title: Parsing Chained Expressions, Functionally
 topics: haskell, parsers, interpreters, functional programming
 description: When combining XState with React Context to provide global state to your application, you may find it tricky to implement the typing that you want.
-postnum: 10
+postnum: 1
 ---
 
 Recently, I've been developing a command-line JSON processor called [hson](https://github.com/ParkerGits/hson). hson is implemented in Haskell and comprises a CLI and interpreter for manipulating JSON data with the hson language.
 
-hson takes two inputs, an hson script and some JSON data, and enables the user to format the JSON data via the hson script. For example, given the following JSON file,
-
-### sinistcha.json
+hson takes two inputs, an hson script and some JSON data, and enables the user to format the JSON data via the hson script. For example, given the following `sinistcha.json`,
 
 ```json
 {
@@ -39,11 +37,11 @@ The semantics of the above hson script `$.sprites.front_default` are intuitive:
 3. The `front_default` field of `sprites` is accessed.
 4. hson prints the value of the `front_default` field.
 
-The meat of this expression is parsed in the `call` function of my recursive-descent parser. This function is also responsible for parsing
+The meat of this expression is parsed in the `call` function of my recursive-descent parser, which is responsible for
 
-- "Get" expressions that access a property on an object, like `$.sprites`.
-- "Call" expressions that execute code within a callable value. For example, `keys()` executes the `keys` function.
-- "Index" expressions that access an element at an index within an indexable value. For example, `items[0]` accesses the index `0` in `items`.
+- **Get** expressions that access a property on an object, like `$.sprites`.
+- **Call** expressions that execute code within a callable value. For example, `keys()` executes the `keys` function.
+- **Index** expressions that access an element at an index within an indexable value. For example, `items[0]` accesses the index `0` in `items`.
 
 Moreover, the `call` function must consider that each of these expressions can be _chained_ or _nested_. As we saw above, Get expressions can be chained to access properties within properties (e.g., `$.sprites.front_default`). We may also have a callable value that returns a callable value when called, and an indexable value that returns an indexable value when indexed, etc. Thus, our parser must be able to handle expressions like the following
 

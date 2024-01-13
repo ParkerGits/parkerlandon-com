@@ -1,4 +1,5 @@
 import createMDX from "@next/mdx";
+import rehypePrettyCode from "rehype-pretty-code";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 
@@ -9,11 +10,17 @@ const nextConfig = {
   // Optionally, add any other Next.js config below
 };
 
+/** @type {import('rehype-pretty-code').Options} */
+const prettyCodeOptions = {
+  theme: "one-dark-pro",
+  // See Options section below.
+};
+
 const withMDX = createMDX({
   // Add markdown plugins here, as desired
   options: {
     remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
-    rehypePlugins: [],
+    rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
   },
 });
 
