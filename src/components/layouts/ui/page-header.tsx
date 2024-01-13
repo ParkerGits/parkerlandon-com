@@ -1,36 +1,26 @@
-import Link from 'next/link'
-import LogoHeading from './logo-heading'
-import {
-	NavigationMenu,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuList,
-	navigationMenuTriggerStyle,
-} from '../../ui/navigation-menu'
+import LogoHeading from "./logo-heading";
+import { useBreakpoint } from "@/lib/useBreakpoint";
+import HeaderNavigation, { NavigationItem } from "./header-navigation";
+import HamburgerSheet from "./hamburger-sheet";
 
-const NAVIGATION_MENU_ITEMS = [
-	{ title: 'Portfolio', href: '/portfolio' },
-	{ title: 'Posts', href: '/posts' },
-	{ title: 'About', href: '/about' },
-]
+const NAVIGATION_MENU_ITEMS: NavigationItem[] = [
+  { title: "Portfolio", href: "/portfolio" },
+  { title: "Posts", href: "/posts" },
+  { title: "About", href: "/about" },
+];
 
 export default function PageHeader() {
-	return (
-		<header className="flex flex-row items-center justify-between w-full">
-			<LogoHeading />
-			<NavigationMenu className="flex-1 flex-grow-[2]">
-				<NavigationMenuList>
-					{NAVIGATION_MENU_ITEMS.map((item) => (
-						<NavigationMenuItem key={item.title}>
-							<Link href={item.href} legacyBehavior passHref>
-								<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-									{item.title}
-								</NavigationMenuLink>
-							</Link>
-						</NavigationMenuItem>
-					))}
-				</NavigationMenuList>
-			</NavigationMenu>
-		</header>
-	)
+  return (
+    <header className="flex flex-row items-center justify-between w-full">
+      <LogoHeading />
+      <Navigation />
+    </header>
+  );
+}
+
+function Navigation() {
+  const isSm = useBreakpoint("sm");
+  if (isSm === null) return null;
+  if (!isSm) return <HamburgerSheet menuItems={NAVIGATION_MENU_ITEMS} />;
+  return <HeaderNavigation menuItems={NAVIGATION_MENU_ITEMS} />;
 }

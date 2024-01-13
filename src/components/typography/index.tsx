@@ -1,7 +1,9 @@
+import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 
 interface TypographyProps {
   children?: ReactNode;
+  className?: string;
 }
 
 export function TypographyH1({ children }: TypographyProps) {
@@ -20,9 +22,14 @@ export function TypographyH2({ children }: TypographyProps) {
   );
 }
 
-export function TypographyH3({ children }: TypographyProps) {
+export function TypographyH3({ children, className }: TypographyProps) {
   return (
-    <h3 className="scroll-m-20 text-2xl font-medium font-heading tracking-tight">
+    <h3
+      className={cn(
+        "scroll-m-20 text-2xl font-medium font-heading tracking-tight",
+        className,
+      )}
+    >
       {children}
     </h3>
   );
