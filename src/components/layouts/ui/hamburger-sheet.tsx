@@ -33,7 +33,9 @@ export default function HamburgerSheet({ menuItems }: HamburgerSheetProps) {
         {menuItems.map((item) => (
           <Button variant="link" asChild key={item.href}>
             <Link href={item.href}>
-              <TypographyH3 className={cn({ underline: item.href === path })}>
+              <TypographyH3
+                className={cn({ "underline decoration-2": item.href === path })}
+              >
                 {item.title}
               </TypographyH3>
             </Link>

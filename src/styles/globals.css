@@ -89,9 +89,9 @@
     @apply relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-medium font-heading
   }
   pre code {
-    @apply p-4 text-sm leading-tight
+    @apply p-4 text-sm leading-tight w-0
   }
   pre {
-    @apply mt-4 rounded-md overflow-x-scroll
+    @apply mt-4 rounded-lg overflow-x-scroll flex-shrink
   }
 }

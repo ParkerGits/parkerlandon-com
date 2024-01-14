@@ -104,7 +104,9 @@ export const projects: PortfolioItem[] = [
     longDescription: "",
     emoji: "🪄",
     //images: [HngrList, HngrSearch],
-    links: [{ text: "Check out the launch page!", url: "https://hngrapp.xyz" }],
+    links: [
+      { text: "GitHub repository", url: "https://github.com/ParkerGits/hson" },
+    ],
     tags: [
       PortfolioItemTag.HASKELL,
       PortfolioItemTag.CLI,
@@ -147,12 +149,7 @@ export const projects: PortfolioItem[] = [
     longDescription: "",
     emoji: "⚙️",
     //images: [PokecommitEncounter, PokecommitFight],
-    links: [
-      {
-        text: "GitHub repository",
-        url: "https://github.com/ParkerGits/gods",
-      },
-    ],
+    links: [],
     tags: [PortfolioItemTag.RUST, PortfolioItemTag.INTERPRETER],
   },
   {

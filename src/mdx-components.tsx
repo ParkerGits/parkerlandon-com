@@ -7,7 +7,6 @@ import {
   TypographyH1,
   TypographyH2,
   TypographyH3,
-  TypographyInlineCode,
   TypographyOL,
   TypographyUL,
 } from "./components/typography";

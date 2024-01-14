@@ -1,7 +1,7 @@
 ---
 title: Parsing Chained Expressions, Functionally
 keywords: haskell, parsers, interpreters, functional programming
-description: When combining XState with React Context to provide global state to your application, you may find it tricky to implement the typing that you want.
+description: While immutability can help prevent bugs, it can also create challenges. Such challenges arise when parsing chained expressions from left-to-right, as those expressions must be nested in the parse tree from right-to-left.
 url: https://parkerlandon.com/parsing-chained-expressions-functionally
 ogImageUrl: https://adoring-jackson-1187ff.netlify.app/.netlify/functions/gen-opengraph-image?title=Parsing%20Chained%20Expressions%2C%20Functionally&tags=haskell%2Cfunctional%20programming
 postnum: 1
@@ -192,7 +192,7 @@ The `(&)` operator comes from `Data.Function` and is the `flip` of infix functio
 -- e.g., 3 & (+1) == 4
 ````
 
-To summarize, we can parse chained expressions in Haskell by creating a list of functions that map child expressions to newly constructed parent expressions, then thread the original, leftmost expression through those functions to produce the final root expression. This solution exemplifies a more broad pattern of returning and using "setter" functions wherever we might otherwise employ mutability and reassignment in an imperative language.
+To summarize, we can parse chained expressions in Haskell by creating a list of functions that map child expressions to newly constructed parent expressions, then thread the original, leftmost expression through those functions to produce the final root expression. This solution exemplifies a broader pattern of returning and applying "setter" functions wherever we might employ mutability and reassignment in an imperative language.
 
 import withLayout from '../../lib/withLayout'
 export default withLayout(frontmatter)
