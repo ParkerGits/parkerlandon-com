@@ -1,5 +1,6 @@
 ---
 title: "About Parker"
+ogImageUrl: https://adoring-jackson-1187ff.netlify.app/.netlify/functions/gen-opengraph-image?title=About%20Parker&tags=parkerlandon.com
 ---
 
 Hey, I'm Parker Landon 👋
@@ -30,8 +31,5 @@ Alongside the development of knowted during the winter term of my sophomore year
 
 Looking forward, I foresee that my passions for software will continue to guide me through meaningful challenges and subsequent growth. As I undergo these endeavors, I expect to keep this site updated. For now, you can see what I've created so far in my [portfolio section](/portfolio).
 
-import DefaultLayout from '../components/layouts/default-layout'
-
-export default function BlogPage({ children }) {
-return <DefaultLayout meta={frontmatter}>{children}</DefaultLayout>
-}
+import withLayout from '../lib/withLayout'
+export default withLayout(frontmatter)

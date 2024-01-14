@@ -1,7 +1,9 @@
 ---
 title: Parsing Chained Expressions, Functionally
-topics: haskell, parsers, interpreters, functional programming
+keywords: haskell, parsers, interpreters, functional programming
 description: When combining XState with React Context to provide global state to your application, you may find it tricky to implement the typing that you want.
+url: https://parkerlandon.com/parsing-chained-expressions-functionally
+ogImageUrl: https://adoring-jackson-1187ff.netlify.app/.netlify/functions/gen-opengraph-image?title=Parsing%20Chained%20Expressions%2C%20Functionally&tags=haskell%2Cfunctional%20programming
 postnum: 1
 ---
 
@@ -101,8 +103,5 @@ GetExpr
 )
 ```
 
-import DefaultLayout from '../../components/layouts/default-layout'
-
-export default function BlogPage({ children }) {
-	return <DefaultLayout meta={frontmatter}>{children}</DefaultLayout>
-}
+import withLayout from '../../lib/withLayout'
+export default withLayout(frontmatter)
