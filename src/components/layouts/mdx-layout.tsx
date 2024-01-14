@@ -49,7 +49,7 @@ export default function MdxLayout({ children, meta }: MdxLayoutProps) {
       <PageLayout>
         <main className="max-w-2xl">
           {meta.title !== undefined && <TitleText>{meta.title}</TitleText>}
-          {children}
+          <article>{children}</article>
         </main>
       </PageLayout>
     </>
