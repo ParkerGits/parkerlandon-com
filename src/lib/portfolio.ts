@@ -126,7 +126,7 @@ export const projects: PortfolioItem[] = [
         url: "https://github.com/ParkerGits/gograph",
       },
     ],
-    tags: [PortfolioItemTag.GO],
+    tags: [PortfolioItemTag.GO, PortfolioItemTag.PACKAGE],
   },
   {
     title: "gods",
@@ -141,7 +141,7 @@ export const projects: PortfolioItem[] = [
         url: "https://github.com/ParkerGits/gods",
       },
     ],
-    tags: [PortfolioItemTag.GO],
+    tags: [PortfolioItemTag.GO, PortfolioItemTag.PACKAGE],
   },
   {
     title: "Scheme/Prolog Transpiler",
