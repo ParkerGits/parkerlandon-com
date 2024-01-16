@@ -10,6 +10,5 @@ export default function processFrontmatter(
   if (!frontmatter.url)
     throw new Error("Add a URL to the frontmatter of this page!");
   const postSlug = frontmatter.url.split("/").at(-1)!;
-  console.log(postSlug);
   return { ...frontmatter, topics: postTopics, slug: postSlug };
 }
