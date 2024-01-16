@@ -1,4 +1,4 @@
-import { Noto_Serif, Roboto, Roboto_Slab } from "next/font/google";
+import { Noto_Serif, Roboto, Roboto_Slab, Fira_Mono } from "next/font/google";
 
 export const fontLogo = Noto_Serif({
   subsets: ["latin"],
@@ -16,4 +16,10 @@ export const fontBody = Roboto({
   subsets: ["latin"],
   variable: "--font-body",
   weight: ["400", "700"],
+});
+
+export const fontMono = Fira_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  weight: ["400", "500"],
 });

@@ -86,7 +86,7 @@
     @apply bg-background text-foreground;
   }
   code:not(pre *) {
-    @apply relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-medium font-heading
+    @apply relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-medium font-mono
   }
   pre code {
     @apply p-4 text-sm leading-tight w-0

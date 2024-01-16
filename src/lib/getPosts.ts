@@ -15,5 +15,5 @@ export default async function getPosts(): Promise<PostMetadata[]> {
       return processFrontmatter(frontmatter);
     }),
   );
-  return meta;
+  return meta.toSorted((a, b) => +b.postnum - +a.postnum);
 }

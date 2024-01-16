@@ -1,4 +1,4 @@
-import { fontBody, fontHeading, fontLogo } from "@/lib/fonts";
+import { fontBody, fontHeading, fontLogo, fontMono } from "@/lib/fonts";
 import PageFooter from "./ui/page-footer";
 import PageHeader from "./ui/page-header";
 import { cn } from "@/lib/utils";
@@ -16,6 +16,7 @@ export default function PageLayout({ children }: PageLayoutProps) {
         fontLogo.variable,
         fontHeading.variable,
         fontBody.variable,
+        fontMono.variable,
       )}
     >
       <div className="flex flex-col items-center w-full">

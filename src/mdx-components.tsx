@@ -4,6 +4,7 @@ import BodyText from "@/components/typography/body-text";
 import Link from "next/link";
 import AnchorText from "./components/typography/anchor-text";
 import {
+  TypographyBlockquote,
   TypographyH1,
   TypographyH2,
   TypographyH3,
@@ -47,6 +48,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     },
     ul: ({ children }) => <TypographyUL>{children}</TypographyUL>,
     ol: ({ children }) => <TypographyOL>{children}</TypographyOL>,
+    blockquote: ({ children }) => (
+      <TypographyBlockquote>{children}</TypographyBlockquote>
+    ),
     ...components,
   };
 }

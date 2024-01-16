@@ -22,6 +22,7 @@ const config = {
       logo: ["var(--font-logo)", ...fontFamily.serif],
       heading: ["var(--font-heading)", ...fontFamily.serif],
       body: ["var(--font-body)", ...fontFamily.sans],
+      mono: ["var(--font-mono)", ...fontFamily.mono],
     },
     screens: {
       xs: "475px",
