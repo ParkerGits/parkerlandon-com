@@ -10,6 +10,7 @@ import {
 } from "../ui/dialog";
 import { DialogClose, DialogDescription } from "@radix-ui/react-dialog";
 import { TypographyUL } from "../typography";
+import AnchorText from "../typography/anchor-text";
 
 interface PortfolioCardDetailsButtonProps {
   item: PortfolioItem;
@@ -31,9 +32,7 @@ export default function PortfolioCardDetailsDialog({
             {item.links.map((link) => (
               <li key={link.url}>
                 <a href={link.url} target="_blank">
-                  <Button variant="link" size="link">
-                    {link.text}
-                  </Button>
+                  <AnchorText>{link.text}</AnchorText>
                 </a>
               </li>
             ))}
