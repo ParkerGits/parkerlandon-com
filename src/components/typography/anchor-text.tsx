@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ReactNode } from "react";
 
 type BodyTextProps = {
@@ -9,7 +8,7 @@ export default function AnchorText({ children }: BodyTextProps) {
   return (
     <span
       className={
-        "leading-7 [&:not(:first-child)]:mt-6 font-body text-highlight hover:text-highlight-hover"
+        "leading-7 [&:not(:first-child)]:mt-6 font-body text-highlight hover:text-highlight-hover hover:underline decoration-2 underline-offset-2"
       }
     >
       {children}
