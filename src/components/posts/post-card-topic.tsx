@@ -32,5 +32,15 @@ function getTopicProps(tag: PostTopic) {
         children: "Interpreters",
         className: "bg-amber-400 hover:bg-amber-600",
       };
+    case PostTopic.QUICKCHECK:
+      return {
+        children: "QuickCheck",
+        className: "bg-blue-400 hover:bg-blue-600",
+      };
+    case PostTopic.TESTING:
+      return {
+        children: "Testing",
+        className: "bg-red-500 hover:bg-red-700",
+      };
   }
 }

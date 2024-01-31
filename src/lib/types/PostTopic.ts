@@ -3,6 +3,8 @@ export enum PostTopic {
   FUNCTIONAL_PROGRAMMING = "functional programming",
   PARSERS = "parsers",
   INTERPRETERS = "interpreters",
+  QUICKCHECK = "quickcheck",
+  TESTING = "testing",
 }
 
 const topics = {
@@ -10,6 +12,8 @@ const topics = {
   "functional programming": PostTopic.FUNCTIONAL_PROGRAMMING,
   parsers: PostTopic.PARSERS,
   interpreters: PostTopic.INTERPRETERS,
+  quickcheck: PostTopic.QUICKCHECK,
+  testing: PostTopic.TESTING,
 } as const;
 
 type Topic = keyof typeof topics;

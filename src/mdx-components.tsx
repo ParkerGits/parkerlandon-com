@@ -40,6 +40,13 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
           </Link>
         );
       }
+      if (href && href.startsWith("#")) {
+        return (
+          <Link href={href}>
+            <AnchorText>{children}</AnchorText>
+          </Link>
+        );
+      }
       return (
         <a href={href} target="_blank">
           <AnchorText>{children}</AnchorText>

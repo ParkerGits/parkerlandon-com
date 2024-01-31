@@ -94,4 +94,7 @@
   pre {
     @apply mt-4 rounded-lg overflow-x-scroll flex-shrink
   }
+  section[data-footnotes="true"] {
+    @apply mt-8
+  }
 }
