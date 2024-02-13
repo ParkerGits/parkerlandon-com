@@ -43,7 +43,16 @@ Another significant feature of mainstream object-oriented programming languages 
 
 A goal of object-oriented programming (i.e., using classes, behaviors, properties, relationships, etc.) is to _encapsulate_ these state updates by containing them within objects and abstracting over them with a defined interface. Interacting with the data encapsulated by `myRectangle`, for example, is managed by the `Rectangle` class and limited by its provided interface (viz., its `constructor` and the `area` method). This way, state updates are more controlled, and unintended results are more easily identified as occurring within a class instead of "somewhere in the system."
 
-Still, state transitions represent only one kind of side effect. Programs may also print text, execute other programs, send emails, and launch missiles.[^2] Typically, the imperative style allows these side effects to occur anywhere in the program, and often without any indication or warning that they occur.
+Still, state transitions represent only one kind of side effect. Programs may also
+
+- print text
+- read data from a file
+- query a database
+- execute other programs
+- send emails
+- launch missiles[^2]
+
+Typically, the imperative style allows these side effects to occur anywhere in the program, and often without any indication or warning that they occur.
 
 ```ts
 // Our `main` function does not indicate that this program launches missiles.
@@ -64,12 +73,97 @@ In general, there exists a tradeoff between correctness and writability. While t
 
 ### Functional Programming and Purity
 
-In contrast to imperative programming, the functional programming (FP) paradigm places a greater emphasis on correctness. According to the FP style, a program is a function defined in terms of other functions; programs are compositions of functions. Rather than performing computations as sequences of state transitions, functional computations are carried out by applying functions to arguments. Of course, imperative programming languages often provide the ability to construct and apply functions, too, but the functional programming style distinguishes itself by promoting _purity_. A function is said to be _pure_ if its execution produces no side effects and its output depends on nothing besides its input. In other words, the result of a pure function is wholly determined by its input; it will always produce the same output given the same input. Thus, the behavior of a pure function is captured entirely by it's definition: its result neither mutates nor is influenced by any program state.[^2] In this way, contrasting with the "statefulness" of imperative programming, functional programming is said to be "stateless."
+In contrast to imperative programming, the functional programming (FP) paradigm places a greater emphasis on correctness. According to the FP style, a program is a function defined in terms of other functions; programs are compositions of functions. Rather than performing computations as sequences of state transitions, functional computations are carried out by applying functions to arguments. Of course, imperative programming languages often provide the ability to construct and apply functions, too, but the functional programming style distinguishes itself by promoting _purity_.
 
-The upshot of purity is that it eliminates the possibility of rogue side effects by doing away with side effects altogether. While this limitation may seem severe, it affords several benefits that all promote correctness. For example, a functional program is easy to reason about because a pure function's behavior is captured entirely by its definition. There is never a concern for how a function operates in the broader context of a stateful program because its output depends solely on its input. For these same reasons, pure functions are trivial to test. While a test of an impure function might first require arranging the appropriate preconditions (a generally laborious task within an imperative program), testing a pure function simply requires providing it with the appropriate inputs and asserting about its outputs.
+A function is said to be _pure_ if its execution produces no side effects and its output depends on nothing besides its input. In other words, the result of a pure function is wholly determined by its input; it will always produce the same output given the same input. Thus, the behavior of a pure function is captured entirely by it's definition: its result neither mutates nor is influenced by any program state.[^2] In this way, contrasting with the "statefulness" of imperative programming, functional programming is said to be "stateless."
+
+> Give an example of a pure function versus an impure function
+
+The upshot of purity is that it eliminates the possibility of rogue side effects by doing away with side effects altogether. While this limitation may seem severe, it affords several benefits that promote correctness. For example, a functional program is easy to reason about. Because a pure function's behavior is captured entirely by its definition, there is never a concern for how a function operates in the broader context of a stateful program. For the same reasons, functional programs tend to be trivial to test. While a test of an impure function might first require arranging the appropriate preconditions (a generally laborious task within an imperative program), testing a pure function simply requires providing it with the appropriate inputs and asserting about its outputs.
+
+>**Also mention parallelization** (Why Parallel Functional Programming Matters, How Functional Programming mattered)
+
+Still, it may seem that there exists a fatal problem with the purity restriction: a program composed solely of pure functions is useless. Even receiving inputs and displaying outputs are kinds of side effects, so they cannot be performed in a pure context. Fortunately, as I will reveal, Haskell facilitates producing side effects through the use of _monads_, which encode impure functions and create a boundary distinguishing effectful operations from pure ones. First, I must introduce Haskell's rich type system.
+
+### Haskell Types
+
+Haskell is a statically-typed programming language, meaning that the type of each value is known at compile time and that programs with type errors will fail to compile. Static typing is another limitation like purity that aims to promote correctness. Although it cannot eliminate all unexpected or undesired behaviors, static type checking prevents the programmer from introducing a certain class of errors, like that which arises from adding numbers to boolean values.[^3] While there exists disagreement about the cost to convenience of static type checking and the extent to which it ensures program safety,[^4] I aim to illustrate how Haskell's robust type system promotes correctness while still enabling flexibility.
+
+In Haskell, every value has an associated type. We can explicitly declare the type of a value with the `::` symbol.
+
+```hs
+number :: Int
+listOfNumbers :: [Int]
+numberTuple :: (Int, Int)
+```
+
+Functions are values, too, and therefore also have types. The `->` symbol is used to denote the type of a function mapping.
+
+```hs
+length :: [Int] -> Int
+````
+
+The statement above declares that the function `length` maps a list of integers `[Int]` to a single integer `Int`. The semantics of `length` is intuitive: given a list of integers, return the number of elements. However, notice that `length` is not very flexible: we couldn't use it to find the length of a list of characters, for example. Fortunately, Haskell provides _polymorphic_ types, which enables type declarations to include _type variables_ that can be instantiated to any type.[^2] For example, the type `[a]` includes the type variable `a` and denotes a list of any type. Using polymorphic types, the type of `length` can be rewritten to be more reusable.
+
+```hs
+length :: [a] -> Int
+```
+
+We can apply a function `f` to an argument `a` with the syntax `f a`. Thus, we can compute the length of a `list :: [Int]` with `length list`.
+
+```hs
+listLength :: Int
+listLength = length list
+```
+
+What about functions with two or more parameters? We could define a function `add`, for example, that returns the sum of two `Int` arguments. A first pass at the type declaration of `add` might group the two parameters into a tuple:
+
+```hs
+add :: (Int, Int) -> Int
+add (a, b) = a + b
+````
+
+Then, to apply `add` as declared to the values `1` and `2`, we would write `add (1,2)`.
+
+Now, consider the following new definition of `add`:
+
+```hs
+add :: Int -> Int -> Int
+add a b = a + b
+```
+
+The `->` symbol is right-associative, so `Int -> Int -> Int` implicitly means `Int -> (Int -> Int)` and can be read as "a function that maps an `Int` to a function that maps an `Int` to an `Int`". This style of writing a function with two or more parameters as a function mapping a single argument to a function with a single parameter is called _currying_.[^5]
+
+With our new, curried type definition, we can apply `add` to `1` and `2` with `add 1 2`. Function application is left-associative, so `add 1 2` is equivalent to `(add 1) 2`. Notice, we could also use `add` to define a new function `increment` that adds 1 to its argument!
+
+```hs
+increment :: Int -> Int
+increment = add 1
+
+increment 2 -- this is the same as (add 1) 2!
+```
+
+Currying enables us to create robust, extensible functions and is the default for function definitions in Haskell.
+
+### Typeclasses
+
+Can we make our `add` function more flexible? Currently it only works for adding integers, but it would be convenient if `add` supported all kinds of numbers.
+
+A first pass at a more reusable `add` function would be to use polymorphic types in the type declaration to support all types.
+
+```hs
+add :: a -> a -> a
+add a b = a + b
+```
+
+However, this code won't compile because the `+` operator is not defined for all types.
+
 
 [^1]: See [The Early History of F#](https://fsharp.org/history/hopl-final/hopl-fsharp.pdf)
 [^2]: See [How Functional Programming Mattered](https://academic.oup.com/nsr/article/2/3/349/1427872)
+[^3]: See _Types and Programming Languages_ by B.C. Pierce
+[^4]: See [Static Typing Where Possible, Dynamic Typing When Needed](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=e670c72afa489ffdfab77852a0c9781e082fc266) and [Scripting: Higher-Level Programmingfor the 21st Century](https://web.stanford.edu/~ouster/cgi-bin/papers/scripting.pdf)
+[^5]: See [A History of Haskell](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/history.pdf)
 
 import withLayout from '../../lib/withLayout'
 export default withLayout(frontmatter)
