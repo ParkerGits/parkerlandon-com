@@ -120,7 +120,7 @@ What about functions with two or more parameters? We could define a function `ad
 
 ```hs
 add :: (Int, Int) -> Int
-add (a, b) = a + b
+add (x, y) = x + y
 ````
 
 Then, to apply `add` as declared to the values `1` and `2`, we would write `add (1,2)`.
@@ -129,7 +129,7 @@ Now, consider the following new definition of `add`:
 
 ```hs
 add :: Int -> Int -> Int
-add a b = a + b
+add x y = x + y
 ```
 
 The `->` symbol is right-associative, so `Int -> Int -> Int` implicitly means `Int -> (Int -> Int)` and can be read as "a function that maps an `Int` to a function that maps an `Int` to an `Int`". This style of writing a function with two or more parameters as a function mapping a single argument to a function with a single parameter is called _currying_.[^5]
@@ -149,14 +149,44 @@ Currying enables us to create robust, extensible functions and is the default fo
 
 Can we make our `add` function more flexible? Currently it only works for adding integers, but it would be convenient if `add` supported all kinds of numbers.
 
-A first pass at a more reusable `add` function would be to use polymorphic types in the type declaration to support all types.
+A first pass at implementing a more reusable `add` function would be to use polymorphic types in the type declaration to support all types.
 
 ```hs
 add :: a -> a -> a
-add a b = a + b
+add x y = x + y
 ```
 
-However, this code won't compile because the `+` operator is not defined for all types.
+However, this code won't compile because the `+` operator is not defined for all types: the Haskell compiler wouldn't know how to perform `add True False`, for example. Thus, `add` should only support the _class_ of types for which `+` is defined. Indeed, Haskell provides _type classes_ that enable us to overload operations for different types and categorize types according to the operations they support.
+
+A `class` declaration describes a new type class according to its operations and their type signatures. A simple type class is the built-in `Eq` type class, which says that a type `a` is an instance of `Eq` if it defines the equality operator `==` with type `a -> a -> Bool`.[^6]
+
+```hs
+class Eq a where
+  (==) :: a -> a -> Bool
+```
+
+For the purpose of extending our `add` function, we're interested in the `Num` type class, which contains types for which basic numeric operations like `+` are defined.
+
+```hs
+class Num a where
+  (+) :: a -> a -> a
+  (-) :: a -> a -> a
+  (*) :: a -> a -> a
+  negate :: a -> a
+  abs :: a -> a
+  signum :: a -> a
+  fromInteger :: Integer -> a
+```
+
+Now we can use the `Num` type class as the _context_ of `a` in the type declaration of `add`, restricting the types `add` supports to those that define addition with the `+` operator.[^6]
+
+```hs
+add :: (Num a) => a -> a -> a
+add a b = a + b
+````
+
+### Defining Types
+
 
 
 [^1]: See [The Early History of F#](https://fsharp.org/history/hopl-final/hopl-fsharp.pdf)
@@ -164,6 +194,7 @@ However, this code won't compile because the `+` operator is not defined for all
 [^3]: See _Types and Programming Languages_ by B.C. Pierce
 [^4]: See [Static Typing Where Possible, Dynamic Typing When Needed](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=e670c72afa489ffdfab77852a0c9781e082fc266) and [Scripting: Higher-Level Programmingfor the 21st Century](https://web.stanford.edu/~ouster/cgi-bin/papers/scripting.pdf)
 [^5]: See [A History of Haskell](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/history.pdf)
+[^6]: See [Type Classes in Haskell](https://dl.acm.org/doi/10.1145/227699.227700)
 
 import withLayout from '../../lib/withLayout'
 export default withLayout(frontmatter)
