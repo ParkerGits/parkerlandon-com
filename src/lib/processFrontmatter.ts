@@ -1,14 +1,21 @@
 import { PostMetadata } from "./types/PostMetadata";
 import { toPostTopic } from "./types/PostTopic";
 
-export type UnprocessedMetadata = Omit<PostMetadata, "slug" | "topics">;
+const baseUrl = process.env.VERCEL_URL ?? "http://localhost:3000";
+
+export type UnprocessedMetadata = Omit<PostMetadata, "slug" | "topics" | "url">;
 
 export default function processFrontmatter(
+  filename: string,
   frontmatter: UnprocessedMetadata,
 ): PostMetadata {
-  const postTopics = frontmatter.keywords?.split(", ").map(toPostTopic) ?? [];
-  if (!frontmatter.url)
-    throw new Error("Add a URL to the frontmatter of this page!");
-  const postSlug = frontmatter.url.split("/").at(-1)!;
-  return { ...frontmatter, topics: postTopics, slug: postSlug };
+  const topics = frontmatter.keywords?.split(", ").map(toPostTopic) ?? [];
+  const slug = filename.split(".mdx")[0];
+  const url = `${baseUrl}/posts/${slug}`;
+  return {
+    ...frontmatter,
+    topics,
+    slug,
+    url,
+  };
 }

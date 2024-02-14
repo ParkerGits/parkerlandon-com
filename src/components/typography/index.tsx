@@ -26,7 +26,7 @@ export function TypographyH3({ children, className }: TypographyProps) {
   return (
     <h3
       className={cn(
-        "scroll-m-20 text-2xl font-medium font-heading tracking-tight",
+        "scroll-m-20 text-2xl font-medium font-heading tracking-tight mt-8",
         className,
       )}
     >
@@ -45,7 +45,7 @@ export function TypographyH4({ children }: TypographyProps) {
 
 export function TypographyP({ children }: TypographyProps) {
   return (
-    <p className="leading-7 [&:not({children}: TypographyProps:first-child)]:mt-6">
+    <p className="leading-7 [&:not({children}: TypographyProps:first-child)]:mt-4">
       {children}
     </p>
   );

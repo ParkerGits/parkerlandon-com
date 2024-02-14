@@ -1,7 +1,7 @@
 export interface PageMetadata {
   title?: string | undefined;
-  description?: string | undefined;
   url?: string | undefined;
+  description?: string | undefined;
   type?: string | undefined;
   keywords?: string | undefined;
   ogImageUrl?: string | undefined;
