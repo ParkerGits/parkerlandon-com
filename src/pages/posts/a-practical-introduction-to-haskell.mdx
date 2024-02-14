@@ -2,7 +2,7 @@
 title: A Practical Introduction to Haskell
 keywords: haskell, functional programming
 description:
-url: https://parkerlandon.com/a-practical-introduction-to-haskell
+url: https://parkerlandon.com/posts/a-practical-introduction-to-haskell
 ogImageUrl: https://adoring-jackson-1187ff.netlify.app/.netlify/functions/gen-opengraph-image?title=A%20Practical%20Introduction%20to%20Haskell&tags=haskell,functional%20programming
 postnum: 4
 ---
@@ -116,7 +116,7 @@ listLength :: Int
 listLength = length list
 ```
 
-What about functions with two or more parameters? We could define a function `add`, for example, that returns the sum of two `Int` arguments. A first pass at the type declaration of `add` might group the two parameters into a tuple:
+What about functions with two or more parameters? We could define a trivial function `add`, for example, that returns the sum of two `Int` arguments. A first pass at the type declaration of `add` might group the two parameters into a tuple:
 
 ```hs
 add :: (Int, Int) -> Int
@@ -187,7 +187,13 @@ add a b = a + b
 
 ### Defining Types
 
+What if we wanted to define our own kind of numeric type, like a type `Complex` to represent complex numbers? We can introduce a new type with the `data` keyword. Before we define `Complex`, consider the following type declaration for `Bool`.
 
+```hs
+data Bool = True | False
+```
+
+The statement introduces the type `Bool` along with two values, or _constructors_, that it comprises: `True` and `False`.[^7]
 
 [^1]: See [The Early History of F#](https://fsharp.org/history/hopl-final/hopl-fsharp.pdf)
 [^2]: See [How Functional Programming Mattered](https://academic.oup.com/nsr/article/2/3/349/1427872)
