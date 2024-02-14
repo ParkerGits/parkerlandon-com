@@ -32,23 +32,16 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         alt={props.alt ?? ""}
       />
     ),
-    a: ({ href, children }) => {
-      if (href && href.startsWith("/")) {
+    a: ({ href, children, ref, ...rest }) => {
+      if (href && (href.startsWith("/") || href.startsWith("#"))) {
         return (
-          <Link href={href}>
-            <AnchorText>{children}</AnchorText>
-          </Link>
-        );
-      }
-      if (href && href.startsWith("#")) {
-        return (
-          <Link href={href}>
+          <Link href={href} {...rest}>
             <AnchorText>{children}</AnchorText>
           </Link>
         );
       }
       return (
-        <a href={href} target="_blank">
+        <a href={href} target="_blank" {...rest}>
           <AnchorText>{children}</AnchorText>
         </a>
       );
