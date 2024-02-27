@@ -22,7 +22,7 @@ program = do
   expr <- expression
   eof
   return (declarations, expr)
-````
+```
 
 However, the type of `program` is less intuitive. For example, what's an `HSONParser`? Looking at the rest of the `Parser` module, we see it's a type that wraps the result of every parse operation.
 
@@ -70,7 +70,7 @@ const parser = new Parser(tokens)
 
 // `Parse()` operates on the internal `tokens` state, not an argument
 const result = parser.Parse()
-````
+```
 
 The class analogy extends to help explain the `HSONParser` wrapper: just as you can't use an instance method of a class until you instantiate it, you can't use the result of a parse operation until you unwrap it. Moreover, just as a `Parser` class might require some data in its constructor to instantiate it, the `HSONParser` wrapper requires data to unwrap it.
 
@@ -109,7 +109,7 @@ Advancing to the second question, how do we finally unwrap the `HSONParser`? Its
 
 ```haskell
 type HSONParser = ParsecT T.Text () Identity
-````
+```
 
 We see that `HSONParser` is actually an alias for the `ParsecT` type. If you're unfamiliar with [Parsec](https://hackage.haskell.org/package/parsec-3.1.17.0/docs/Text-Parsec.html), it's a Haskell library that defines all the parser functionality I've described above alongside numerous parser combinator primitives. The Parsec documentation provides us with a definition of `ParsecT`:
 
@@ -122,7 +122,7 @@ To unwrap a `Text` parser, we simply need to provide it with a `Text` input! Her
 ```haskell
 parseHSON :: T.Text -> Either ParseError Program
 parseHSON s = runIdentity $ runParserT program () "" s
-````
+```
 
 The `parseHSON` function receives some `Text` input and runs the `program` parser (the root of our recursive descent) with it. The `()` corresponds to the empty user state `()` option in the `HSONParser` definition, and the empty string is passed to an optional `filePath` parameter. The `runParserT` thus unwraps the `HSONParser` type and returns `Identity (Either ParseError Program)`, which we again unwrap with `runIdentity` to get `Either ParseError Program`. Of course, we originally desired a `Program`, but the `Either ParseError Program` captures the fact that the parser might have failed given the input. In hson, we simply print the error if it occurred or run the program otherwise.
 
