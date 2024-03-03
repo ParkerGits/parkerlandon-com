@@ -42,5 +42,15 @@ function getTopicProps(tag: PostTopic) {
         children: "Testing",
         className: "bg-red-500 hover:bg-red-700",
       };
+    case PostTopic.HSON:
+      return {
+        children: "hson",
+        className: "bg-purple-700 hover:bg-purple-800",
+      };
+    case PostTopic.UNKNOWN:
+      return {
+        children: "SET A POST TOPIC",
+        className: "bg-red-900",
+      };
   }
 }

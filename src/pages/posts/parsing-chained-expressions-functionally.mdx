@@ -190,7 +190,7 @@ The `(&)` operator comes from `Data.Function` and is the `flip` of infix functio
 ```haskell
 (&) = flip ($)
 -- e.g., 3 & (+1) == 4
-````
+```
 
 To summarize, we can parse chained expressions in Haskell by creating a list of functions that map child expressions to newly constructed parent expressions, then thread the original, leftmost expression through those functions to produce the final root expression. This solution exemplifies a broader pattern of returning and applying "setter" functions wherever we might employ mutability and reassignment in an imperative language.
 
