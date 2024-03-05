@@ -31,7 +31,7 @@ The statement above declares that the function `length` maps a list of integers 
 length :: [a] -> Int
 ```
 
-We can apply a function `f` to an argument `a` with the syntax `f a`. Thus, we can compute the length of a `list :: [Int]` with `length list`.
+We can apply a function `f` to an argument `a` with the syntax `f a`. For example, we can compute the length of a `list :: [Int]` with `length list`.
 
 ```hs
 listLength :: Int
@@ -172,9 +172,6 @@ test1 = unlock "puppy" -- Nothing
 test2 = unlock "kitten" -- Just "Meow!"
 ```
 
-> Pattern matching, History of Haskell
-> The data declaration declares Maybe to be a data type, with two data constructors Nothing and Just. The values of the Maybe type take one of two forms: either Nothing or (Just x). Data constructors can be used both in pattern-matching, to decompose a value of Maybe type, and in an expression, to build a value of Maybe type. Both are illustrated in the definition of mapMaybe. (History of Haskell)
-
 ### Declaring Instances
 
 Having defined a new type `Complex` for representing complex numbers, we can now declare it as an instance of the `Num` typeclass. The following _instance_ declaration provides for the `Complex` type an appropriate definition of each operation in the `Num` typeclass, thus declaring that the `Complex` type belongs to `Num`.[^3]
@@ -193,7 +190,7 @@ instance Num Complex where
   fromInteger n = Comp (fromInteger n) 0
 ```
 
-Now we can use `Complex` values where we expect an instance of `Num`.
+Now we can use `Complex` values where we expect an instance of `Num`, allowing us to operate on complex numbers with common numeric operations.
 
 ```hs
 add :: (Num a) => a -> a -> a
@@ -205,7 +202,7 @@ add (Comp 3 4) (Comp 5 6) -- Comp 8.0 10.0
 
 So far, we've considered several functions, types, and typeclasses that are built in to Haskell. These base utilities are provided by the _standard prelude_, which is a library file that all Haskell modules import by default.[^4]
 
-Two (previously introduced) built-in _parameterized_ types are list (`[]`) and `Maybe`. The list type, denoted `[a]` or `[] a`, represents a sequence of elements of the same type `a`. The `Maybe` type, `Maybe a`, can be thought of as a result that either fails and is `Nothing` or succeeds and contains a value of type `a` within `Just`.[^4]
+Two built-in parameterized types—types that include type variables—are list (`[]`) and `Maybe`. The list type, denoted `[a]` or `[] a`, represents a sequence of elements of the same type `a`. The `Maybe` type, `Maybe a`, can be thought of as a result that either fails and is `Nothing` or succeeds and contains a value of type `a` within `Just`.[^4]
 
 Another useful parameterized type is `Either a b`, which is defined as follows.
 
@@ -221,7 +218,13 @@ A unique but central example of a parameterized type is `IO a`. As previously me
 getChar :: IO Char
 ```
 
-Intuitively, `getChar` produces a `Char` result. However, because it involves the effectful operation of reading from `stdin`, the type of `getChar` is annotated with `IO`. Generally, values with parameterized type are deemed "effectful" because those parameterized types capture some _effect_, like an input/output side effect.
+Intuitively, `getChar` produces a `Char` result. However, because it involves the effectful operation of reading from `stdin`, the type of `getChar` is annotated with `IO`. Generally, values with parameterized type are deemed "effectful" because those parameterized types capture some _effect_, like an input/output side effect. Some effects can be safely "escaped," with their internal values being separated from the structure of the parameterized type. The `Maybe` type, for example, can be escaped by pattern matching over its values `Just` and `Nothing`.
+
+```hs
+unwrapMessage :: Maybe String -> String
+unwrapMessage (Just msg) = "Your message is: " ++ msg
+unwrapMessage Nothing = "No messages here!"
+```
 
 The upshot of the `IO` type is that there is no way to safely escape it. Once a value's type is annotated with `IO`, all subsequent operations involving that value must also produce an `IO` result (barring any use of `unsafePerformIO`).[^2] Still, we _can_ operate on `IO` values within the framework of the `Functor`, `Applicative`, and `Monad` typeclasses, which I will introduce now.
 
@@ -280,19 +283,19 @@ The syntax `class Functor f => Applicative f` declares that a parameterized type
 ```hs
 pure (+) <*> Just 3 <*> Just 5 -- Just 8
 pure (+) <*> Just 4 <*> Nothing -- Nothing
-
-pure (-) <*> Right 3 <*> Right 2 -- Right 1
-pure (-) <*> Left 3 <*> Right 2 -- Left 3
 ```
 
 Similarly, `Applicative` operations on `Either` values will either propagate `Left` values or produce `Right` results. We can also use `fmap` or `<$>` instead of `pure` to apply the initial operation in an applicative sequence.
 
 ```hs
+pure (-) <*> Right 3 <*> Right 2 -- Right 1
+pure (-) <*> Left 3 <*> Right 2 -- Left 3
+
 (-) <$> Right 3 <*> Right 2 -- Right 1
 (-) <$> Left 3 <*> Right 2 -- Left 3
 ```
 
-The `Functor` and `Applicative` typeclasses generalize the application of functions producing pure results to effectful arguments. However, they do not capture the common pattern of applying a function producing an effectful result to an effectful value; this operation is instead captured by `>>=` (pronounced "bind") operator provided by the `Monad` typeclass.[^4]
+The `Functor` and `Applicative` typeclasses generalize the application of functions producing pure results to effectful arguments. However, they do not capture the common pattern of applying a function producing an effectful result to an effectful value; this operation is instead captured by the `>>=` (pronounced "bind") operator provided by the `Monad` typeclass.[^4]
 
 ```hs
 class Applicative m => Monad m where
@@ -300,7 +303,7 @@ class Applicative m => Monad m where
   (>>=) :: m a -> (a -> m b) -> m b
 ```
 
-For example, a function `safeSqrt :: Float -> Just Float` could return `Nothing` if the argument is negative and the result of the square root operation otherwise.
+For example, consider a function `safeSqrt :: Float -> Just Float` that returns `Nothing` if the argument is negative and the result of the square root operation otherwise.
 
 ```hs
 safeSqrt :: Float -> Maybe Float

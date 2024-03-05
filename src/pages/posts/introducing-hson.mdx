@@ -1,12 +1,176 @@
 ---
 title: Introducing hson, a JSON processing language
 keywords: hson, haskell
-description: WIP.
+description: hson is a CLI that, when given JSON data and an hson script, processes the JSON data according to the script. I demonstrate the features of hson and illustrate how it was implemented using Haskell.
 url: https://parkerlandon.com/posts/introducing-hson
 ogImageUrl: https://adoring-jackson-1187ff.netlify.app/.netlify/functions/gen-opengraph-image?title=Introducing%20hson,%20a%20JSON%20processing%20language&tags=hson,haskell
 postnum: 6
 ---
 
+To demonstrate the many practical utilities afforded by Haskell and strongly-typed pure functional programming, I've used Haskell to implement a scripting language and CLI called _hson_. The hson language is a domain-specific language for processing JSON data. Its parser and interpreter are included in the hson CLI, which, given an hson script and input JSON, processes the JSON according the the hson script. For example, consider the following JSON data representing a list of restaurant data.
+
+```json
+[
+  {
+    "name": "Parker's Bar and Grill",
+    "city": "Seattle",
+    "state": "Washington",
+    "rating": 4,
+    "price": 1
+  },
+  {
+    "name": "Smashing Sushi",
+    "city": "Portland",
+    "state": "Oregon",
+    "rating": 5,
+    "price": 3
+  },
+  {
+    "name": "Barely Barbecue",
+    "city": "Seattle",
+    "state": "Washington",
+    "rating": 1,
+    "price": 2
+  }
+]
+```
+
+We can write an hson script to retrieve the names of all Seattle restaurants as follows.
+
+```js
+$.filter(|restaurant| =>
+  restaurant.city == "Seattle"
+).map(|restaurant| =>
+  restaurant.name
+)
+```
+
+When we run the hson CLI with the provided JSON data and hson script, the JSON data is parsed and bound to the `$` identifer in the hson script. The hson script then _filters_ that data for restaurants whose `city` is Seattle and _maps_ each restaurant object to its `name`. If we've written the hson script in a file **script.hson** and stored the JSON data in a file **restaurants.json**, we can run the hson program from the command line with the following options for the desired results.
+
+```txt
+$ hson --hf script.hson --jf restaurants.json
+[Parker's Pasta, Barely Barbecue]
+```
+
+Emphasizing readability and familiarity, I designed the hson syntax to be similar to that of JavaScript. Operations like `filter` and `map` can be chained like methods, and properties of objects are accessed with `.`. The construct `|restaurant| => restaurant.name` is an anonymous function that takes a restaurant argument and returns its `name`.
+
+We can rewrite our script with the `toJSON` function, formatting the results as JSON. We'll also employ the pipe operator `|>` instead of chaining methods, and we'll `map` each restaurant to an object with a single `name` property.
+
+```js
+$ |> filter(|restaurant| => restaurant.city == "Seattle")
+  |> map(|restaurant| => {name: restaurant.name})
+  |> toJSON(2)
+```
+
+The pipe operator passes its left-hand side as the first argument to the function call on its right-hand side. The argument of `2` in `toJSON()` specifies an indentation of `2` in the output string. Given the JSON data, the script above produces the following output.
+
+```txt
+$ hson --hf script.hson --jf restaurants.json
+[
+  {
+    "name": "Parker's Pasta"
+  },
+  {
+    "name": "Barely Barbecue"
+  }
+]
+```
+
+We can also declare variables with the `let` keyword. For example, we can define a function `filterSeattleRestaurants` that applies the `filter` and `map` operations from above. Applying that function to `$` gives us the same output as before.
+
+```js
+let filterSeattleRestaurants = |restaurants| =>
+  restaurants
+    |> filter(|restaurant| => restaurant.city == "Seattle")
+    |> map(|restaurant| => restaurant.name);
+filterSeattleRestaurants($)
+```
+
+As a more sophisticated example, consider the following JSON representation of a Turing Machine, where the `start`, `accept`, and `reject` fields name the start, stop, and reject states respectively, and the `delta` field contains information about each state transition.
+
+```json
+{
+  "start": "1",
+  "accept": "accept",
+  "reject": "reject",
+  "delta": [
+    {
+      "from": "1",
+      "to": [
+        {
+          "result": ["reject", "_", "R"],
+          "on": "_"
+        },
+        {
+          "result": ["reject", "x", "R"],
+          "on": "x"
+        },
+        {
+          "result": ["2", "_", "R"],
+          "on": "0"
+        }
+      ]
+    },
+    {
+      "from": "2",
+      "to": [
+        ...
+      ]
+    },
+    ...
+  ]
+}
+```
+
+The following hson script counts the number of transitions that result in the reject state.
+
+```js
+$.delta.reduce(|accumulator, transitions| =>
+  transitions.to.some(|transition| =>
+    transition.result[0] == $.reject) ? accumulator + 1 : accumulator
+  , 0)
+```
+
+The `reduce` function is inspired by Haskell's `foldr` operation and is nearly identical to the `reduce` array method from JavaScript. Its responsibility in the script above is to keep track of the transition count. The `some` function also has a near-identical analog in JavaScript: it returns true if any element in the provided array satisifes its predicate function.In the script above, it returns true if any transitions from a given state result in the reject state. Finally, the ternary operator `?` conditionally adds one to the accumulator if the transition results in a reject state.
+
+We can abstract the logic of conditionally tallying list elements to a higher-order function `countWhere`, which will again use `reduce` and the ternary operator to count the elements that satisfy a given predicate function.
+
+```js
+let countWhere = |list, predicate| =>
+  list.reduce(|accumulator, element| =>
+    predicate(element) ? accumulator + 1 : accumulator
+  , 0);
+```
+
+We can now rewrite our original reject-transition counting script to employ `countWhere`, with the provided predicate being the `some` function from before.
+
+```js
+$.delta |>
+  countWhere(|delta| =>
+    delta.to.some(|transition| =>
+      transition.result[0] == $.reject
+    )
+  )
+```
+
+The beauty of hson as a domain-specific language is that if `countWhere` is a sufficiently common operation, it can be implemented as a built-in function without much friction.
+
+In general, an hson script is a sequence of zero or more variable declarations followed by a single expression. The output of a script is the result of the evaluated final expression. Variables in hson are immutable: once they are defined, they cannot be redefined, and their values cannot be changed. Values in hson are computed solely from compositions of functions, so hson is itself a functional language.
+
+The hson program is responsible for
+
+- parsing command line options
+- parsing the input JSON, converting each value to an hson value and binding the root value to `$`
+- parsing the input hson script
+- interpreting the input script
+- reporting any syntax or runtime errors that occur
+
+The hson codebase also employs _property-based testing_, which helps ensure the correctness of the hson parser by running it on thousands of randomly-generated input programs.[^1] [^2]
+
+In the sections to come, I'll reveal implementation details of hson and illustrate how the program benefits from Haskell-specific features. For now, this article is unfinished, but please check back soon. And, in the mean time, check out [the hson project on GitHub](https://github.com/ParkerGits/hson)!
+
+[^1]: Check out [my article about testing parsers with QuickCheck!](/posts/testing-parsers-thoroughly-with-property-based-testing)
+[^2]: See [QuickCheck: a lightweight tool for random testing of Haskell programs](https://dl.acm.org/doi/10.1145/351240.351266)
 
 import withLayout from '../../lib/withLayout'
 export default withLayout(frontmatter)
