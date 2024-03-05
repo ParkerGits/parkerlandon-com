@@ -1,8 +1,10 @@
 import createMDX from "@next/mdx";
+import rehypeKatex from "rehype-katex";
 import rehypePrettyCode from "rehype-pretty-code";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -20,8 +22,13 @@ const prettyCodeOptions = {
 const withMDX = createMDX({
   // Add markdown plugins here, as desired
   options: {
-    remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter, remarkGfm],
-    rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
+    remarkPlugins: [
+      remarkFrontmatter,
+      remarkMdxFrontmatter,
+      remarkGfm,
+      remarkMath,
+    ],
+    rehypePlugins: [[rehypePrettyCode, prettyCodeOptions], rehypeKatex],
   },
 });
 
