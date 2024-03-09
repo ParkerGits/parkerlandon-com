@@ -97,7 +97,7 @@ Note that when I say a parse tree is "valid," I mean that it's "possible." For e
 
 The above property, expressed in English, is that the composition of `parse` and `prettyPrint` forms the identity function (or equivalently, that `parse` and `prettyPrint` are inverses of each other). The use of `==` is somewhat sneaky because I haven't explicitly defined what it means for two parse trees to be equal. For my purposes, I use `==` to mean that the nodes within the two parse trees have equal types and positions and that their associated data is equal in all the ways I care.
 
-Encoding this test in Haskell requires only a simple function.
+Encoding this test in Haskell requires only a simple function that maps an expression `Expr` to a test result `Bool`.
 
 ```hs
 checkExpressionParser :: Expr -> Bool
@@ -106,11 +106,11 @@ checkExpressionParser ast = case runHSONExprParser (prettyPrintExpr ast) of
   Right a -> ast == a
 ```
 
-The type `Expr` refers to a node in the hson expression parse tree, so the  `checkExpressionParser` test takes a parse tree as input and produces a boolean value. The `runHSONExprParser (prettyPrintExpr ast)` operation corresponds to `parse(prettyPrint(a))`. If the parser produces an error, I return `False`. Otherwise, I assert that the produced parse tree `a` matches the input parse tree `ast`.
+The type `Expr` refers to a node in the hson expression parse tree, so the `checkExpressionParser` test takes a parse tree as input and produces a boolean value. The `runHSONExprParser (prettyPrintExpr ast)` operation corresponds to `parse(prettyPrint(a))`. If the parser produces an error, I return `False`. Otherwise, I assert that the produced parse tree `a` matches the input parse tree `ast`.
 
 I can run this test with `quickCheck checkExpressionParser`, but QuickCheck requires I first define `Expr` as an instance of the `Arbitrary` typeclass. This entails telling QuickCheck how it should generate arbitrary values for `Expr`, which, by and large, was the most difficult aspect of implementing property-based testing for my parser. To summarize the challenges I faced,
 
-- I wanted QuickCheck to produce _valid_ parse trees, so I had to encode precedence rules for operations and eliminate impossible programs. This meant ensuring that, for example, children of higher precedence operations were always lower precedence operations.
+- I wanted QuickCheck to produce _valid_ parse trees, so I had to encode precedence rules for operations and eliminate impossible programs. This meant ensuring that, for example, higher precedence operations were always children of lower precedence operations.
 - Because parse trees can grow exponentially (especially when your language includes arrays and dictionaries), I had to encode sizing rules to prevent QuickCheck from generating infinitely large parse trees.
 
 Besides facing bugs with my `Arbitrary` instance definition for `Expr`, I faced two other kinds of errors:

@@ -167,10 +167,322 @@ The hson program is responsible for
 
 The hson codebase also employs _property-based testing_, which helps ensure the correctness of the hson parser by running it on thousands of randomly-generated input programs.[^1] [^2]
 
-In the sections to come, I'll reveal implementation details of hson and illustrate how the program benefits from Haskell-specific features. For now, this article is unfinished, but please check back soon. And, in the mean time, check out [the hson project on GitHub](https://github.com/ParkerGits/hson)!
+In the following sections, I walk through the implementation details of hson with regard to parsing, interpreting, and testing, revealing how the Haskell codebase fulfills each of hson's responsibilities. In turn, I aim to demonstrate how hson's development has benefitted from utilizing Haskell and strongly-typed pure functional programming.
+
+### Parsing
+
+As previously mentioned, an hson program comprises a series of zero or more variable declarations followed by a single expression, as illustrated by the following type definition.
+
+```hs
+type Program = ([VarStmt], Expr)
+```
+
+The `program` function within the `Parser` module is the entry point for the recursive descent parser; it's responsible for parsing and constructing a `Program` value.
+
+```hs
+program :: HSONParser Program
+program = do
+  declarations <- many varDecl
+  expr <- expression
+  eof
+  return (declarations, expr)
+```
+
+The definition of `program` is expressive enough that even a Haskell novice could intuit the semantics of each line
+
+1. Parse many variable declarations
+2. Parse an expression
+3. Expect the end of the input
+4. Return the `Program` parse result
+
+The Haskell parser is implemented using the [Parsec](https://hackage.haskell.org/package/parsec-3.1.17.0/docs/Text-Parsec.html) library, which contains types and primitives for composing monadic parser combinators.[^3]
+
+> Parser combinator explanation
+
+We can inspect the `HSONParser` type to find that it's an alias for the `ParsecT` type
+
+> explain monad transformers in background
+
+### Testing
+
+The restrictions that Haskell enforces about types, purity, and side effects aim to emphasize program correctness and bolster developer confidence. Still, developers working with other programming languages, even those that are imperative and weakly typed, can feel confident about their code by _testing_ its functionality. The "unit test," for example, is one that demonstrates that an individual software component behaves according to the original design specification and intention. In a unit test, the target software component is isolated from the rest of the system, and its input is defined and controlled by the tester.[^5] Essentially, a unit test seeks to answer the question, "Given a specific input, does the unit of code produce the expected output (or side effects)?" A standard framework for writing unit tests is the _arrange-act-assert_ pattern[^4]:
+
+1. Organize the predefined input data and envionment ("arrange")
+2. Invoke the target software component with the input ("act")
+3. Verify that the resulting output matches the expected output ("assert")
+
+Ideally, a test ensures that the target software component behaves correctly for _all possible inputs_. For example, if we're writing a test for a `divide(a, b)` function, we want to ensure that it produces an expected result for all numeric `a` and `b`. However, it would be infeasible to test the behavior of `divide` over its entire input domain. So we might repeat the arrange-act-assert process with, say, positive, negative, and fractional inputs.
+
+```ts
+describe('divide(a, b)', () => {
+  it('divides positive inputs', () => {
+    // arrange
+    const a = 6;
+    const b = 3;
+
+    // act
+    const result = divide(a, b);
+
+    // assert
+    expect(result).toBe(2);
+  });
+
+  it('divides negative inputs', () => {
+    ...
+  });
+
+  it('divides fractional inputs', () => {
+    ...
+  });
+});
+```
+
+In general, we can never hope to test every possible input, but we can still be somewhat confident in our code if our tests pass for various kinds of inputs. However, the burden of generating a sufficient variety of inputs falls on us, the developers, and knowing which inputs are worth testing may demand considerable expertise or creativity. If, for example, we didn't think to test how our `divide(a, b)` function behaves when `b` is 0, we might encounter unexpected behavior or a runtime error when we call the function in circumstances when `b` is possibly 0.
+
+So, code verification via unit testing demands an understanding of the possible inputs that the target code may receive. Unfortunately, this means that, in practice, unit tests written for existing code are only somewhat effective at revealing unexpected behavior. If we know all the possible inputs when testing a chunk of code, we're likely to have considered and handled all the possible inputs when we wrote that code. And if we fail to consider an edge case when we write a chunk of code, we're unlikely to consider that edge case as a possible input when we test that code. Still, unit tests are powerful tools for providing developers with quick feedback and bolstering code against regressions.[^6] Thus, even many Haskell codebases employ unit tests, and Haskell's purity restrictions make those tests relatively easy to write. Where developers working in imperative languages might spend significant time setting up the complex system state or environment with which their target software interacts,[^6] Haskell developers need only provide the appropriate inputs to the target functions, since purity guarantees that function outputs depend only on their inputs and modify no system state.[^7]
+
+The hson codebase does not yet employ unit tests, but leverages a different technique called _property-based testing_. As the name implies, property-based tests work by verifying that a chunk of code abides by a property.[^7] For example, we could test the following property of the `divide(a, b)` function.
+
+```txt
+for all numeric a, b
+such that b != 0
+divide(a, b) * b == a
+```
+
+The beauty of property-based testing is that, unlike unit testing, we're no longer asserting about _specific_ inputs and outputs. Instead, we're asserting about a property of _all_ outputs given _any_ input that satisfies the conditions. Now, instead of manually checking that this property holds for some inputs, we can randomly generate thousands of inputs and assert that they all satisfy some property. And, because Haskell functions are pure, we don't need to worry about setting up and tearing down the correct state and environment for each of these randomly-generated inputs.
+
+The popular Haskell library [QuickCheck](https://hackage.haskell.org/package/QuickCheck-2.14.3/docs/Test-QuickCheck.html) facilitates this random, repeated input generation and output assertion for property-based tests.[^2] In the hson codebase, QuickCheck is used to test the parser with the aim of ensuring a positive answer to the question, "Given any valid string expression in the hson language, does the hson parser generate the appropriate parse tree?"
+
+Verifying this behavior with property-based testing requires a method of generating arbitrary valid expressions for the parser. In hson, this random string generation is accomplished by generating arbitrary valid parse trees and _pretty printing_ them. Pretty printing, in this case, refers to the inverse of parsing: instead of constructing a parse tree from an input program string, a pretty printer takes a parse tree and produces the program string that could have generated it.[^9] The hson codebase pretty-prints parse trees with the [pretty](https://hackage.haskell.org/package/pretty-1.1.3.6/docs/Text-PrettyPrint.html) package, the design of which was originally introduced by John Hughes in "The Design of a Pretty-printing Library".[^10] For example, the following code snippet contains functions responsible for pretty printing hson expressions.
+
+```hs
+prettyPrintExpr :: Expr -> T.Text
+prettyPrintExpr = prettyPrint ppExpr
+
+ppExpr :: Expr -> Doc
+ppExpr (ArrayInitializerExpr (ArrayInitializer _ elems)) = brackets $ commaSep $ map ppExpr elems
+ppExpr (ArrowFunctionExpr (ArrowFunction params body)) = pipes (commaSep $ map ppTok params) <+> text "=>" <+> ppExpr body
+ppExpr (BinaryExpr (Binary l op r)) = ppExpr l <+> ppTok op <+> ppExpr r
+ppExpr (CallExpr (Call callee _ args)) = ppExpr callee <> parens (commaSep $ map ppExpr args)
+ppExpr (ConditionalExpr (Conditional cond matched unmatched)) = ppExpr cond <+> char '?' <+> ppExpr matched <+> char ':' <+> ppExpr unmatched
+ppExpr (DollarExpr (Dollar tok)) = ppTok tok
+ppExpr (GetExpr (Get obj prop)) = ppExpr obj <> char '.' <> ppTok prop
+ppExpr (GroupingExpr (Grouping expr)) = parens $ ppExpr expr
+ppExpr (IndexExpr (Index indexed _ index)) = ppExpr indexed <> brackets (ppExpr index)
+ppExpr (LiteralExpr (Literal tok)) = ppTok tok
+ppExpr (LogicalExpr (Logical l op r)) = ppExpr l <+> ppTok op <+> ppExpr r
+ppExpr (ObjectInitializerExpr (ObjectInitializer _ entries)) = ppObjectLiteral entries
+ppExpr (UnaryExpr (Unary op r)) = ppTok op <> ppExpr r
+ppExpr (VariableExpr (Variable name)) = ppTok name
+
+...
+```
+
+With the pretty printer implemented for hson expressions, we can now apply property-based testing to the expression parser. The approach is to generate an arbitrary valid parse tree, pretty print it, and then parse the pretty-printed program.[^8] If the pretty printer is correct and the original arbitrary parse tree is valid, then the parser is correct if the output parse tree matches the input parse tree. The property can be expressed as follows.
+
+```txt
+for all parse trees a
+such that a is valid
+parse(prettyPrint(a)) == a
+```
+
+By "valid," I mean that it is "possible," or that some program generates it. In practice, the "valid" condition means, for example, that the parse tree follows the precedence rules of the language. Expressions with lower precedence are never direct children of expressions with higher precedence; binary expressions representing addition should never be children of binary expressions representing multiplication.
+
+Encoding this test in Haskell requires only a simple function that maps an expression `Expr` to a test result `Bool`.
+
+```hs
+checkExpressionParser :: Expr -> Bool
+checkExpressionParser ast = case runHSONExprParser (prettyPrintExpr ast) of
+  Left _ -> False
+  Right a -> ast == a
+```
+
+The type `Expr` refers to a node in the hson expression parse tree, so the `checkExpressionParser` test takes a parse tree as input and produces a boolean value. The `runHSONExprParser (prettyPrintExpr ast)` operation corresponds to `parse(prettyPrint(a))`. If the parser produces an error, I return `False`. Otherwise, I assert that the produced parse tree `a` matches the input parse tree `ast`.
+
+I can run this test with `quickCheck checkExpressionParser`, but QuickCheck requires I first define `Expr` as an instance of the `Arbitrary` typeclass. Declaring an `Arbitrary` instance entails telling QuickCheck how it should generate arbitrary values for the given data type, which admittedly presented some challenges with regard to the `Expr` type. Because the property test requires that QuickCheck produces _valid_ parse trees, I had to encode precedence rules for operations and eliminate impossible programs. Furthermore, I had to encode sizing rules to prevent QuickCheck from generating infinitely large parse trees. The language contains array initializer expressions, for example, which represent ordered collections of expressions. Thus, an `ArrayInitializerExpr` node in the parse tree can have an arbitrarily large number of children, each of which may have their own `ArrayInitializerExpr` descendents. Fortunately, QuickCheck provides `sized` and `resize` functions that allow us to bound the size of the generated parse tree.[^2]
+
+```hs
+sized :: (Int -> Gen a) -> Gen a
+```
+
+In the code for generating primary expressions, I utilize `sized` and `resized` to halve the size parameter every time a recursive expression like `ArrayInitializerExpr` is generated.
+
+```hs
+primaryExprGenerator :: Gen Expr
+primaryExprGenerator =
+  oneof
+    [ LiteralExpr <$> arbitrary
+    , DollarExpr <$> arbitrary
+    , VariableExpr <$> arbitrary
+    , GroupingExpr <$> sized (\n -> resize (n `div` 2) arbitrary)
+    , ArrayInitializerExpr <$> sized (\n -> resize (n `div` 2) arbitrary)
+    , ObjectInitializerExpr <$> sized (\n -> resize (n `div` 2) arbitrary)
+    ]
+```
+
+After surmounting the challenges presented by defining the `Arbitrary` instance for `Expr`, I faced two other kinds of errors.
+
+1. My pretty printer implementation did not correctly convert a parse tree to a program. In one case, it printed the contents of a string literal without surrounding it with quotes.
+2. The parser did not correctly parse a generated input.
+
+In total, the property test has three sources of failure: the parse tree generator, the pretty printer, and the parser. Given a particular error, it is easy to discern its source from among these three possibilities.
+
+1. An invalid parse tree indicates an error with the parse tree generator and, more specifically, the `Arbitrary` instance definition.
+2. An unexpected output program string given a valid parse tree (e.g., a string literal expression printed without surrounding quotes) indicates a bug with the pretty printer.
+3. If both the parse tree and pretty-printed program are correct, there is an error with the parser.
+
+The first two errors cases represent unintentended behavior within the test setup and are undesirable. The third error type, however, implies that a test has successfully identified a bug by generating an unhandled edge case! The property test helped me identify several bugs related to precedence and ambiguity this way. The following test output concerning a `GetExpr` is a notable example of a successful test.
+
+```txt
+*** Failed! Falsified (after 9993 tests and 3 shrinks):
+GetExpr
+  ( Get
+      { object =
+          VariableExpr
+            ( Variable
+                { varName =
+                    Token
+                      { tokenType = TokenIdentifier
+                      , literal = Just leaf
+                      }
+                }
+            )
+      , property =
+          Token
+            { tokenType = TokenIdentifier
+            , literal = Just let
+            }
+      }
+  )
+```
+
+The QuickCheck test output tells us that after running 9993 randomly-generated tests, it identified this counterexample that falsifies the property we're testing. The output also provides the culprit input and that it reached it after three "shrinks." A `shrink` is an operation performed by QuickCheck when it discovers a counterexample (i.e., a generated input that leads to a failed assertion). The goal of `shrink` is to produce the smallest similar counterexample that also fails.[^12] Implementing `shrink` is an optional aspect of creating an `Arbitrary` instance and entails defining a function `shrink :: a -> [a]` that returns a list of simpler values from a given generated value. For example, the `Arbitrary` instance declaration for `Expr` contains both `arbitrary` and `shrink` function definitions.
+
+```hs
+instance Arbitrary Expr where
+  arbitrary =
+    oneof
+      [ ArrayInitializerExpr <$> arbitrary
+      , ArrowFunctionExpr <$> arbitrary
+      , BinaryExpr <$> arbitrary
+      , CallExpr <$> arbitrary
+      , ConditionalExpr <$> arbitrary
+      , DollarExpr <$> arbitrary
+      , GetExpr <$> arbitrary
+      , GroupingExpr <$> arbitrary
+      , IndexExpr <$> arbitrary
+      , LiteralExpr <$> arbitrary
+      , LogicalExpr <$> arbitrary
+      , ObjectInitializerExpr <$> arbitrary
+      , UnaryExpr <$> arbitrary
+      , VariableExpr <$> arbitrary
+      ]
+  shrink (ArrayInitializerExpr (ArrayInitializer tok elems)) =
+    exprLeaves
+      ++ elems
+      ++ [ArrayInitializerExpr (ArrayInitializer tok elems') | elems' <- shrink elems]
+  shrink (ArrowFunctionExpr (ArrowFunction params body)) =
+    exprLeaves
+      ++ [body]
+      ++ [ArrowFunctionExpr (ArrowFunction params body') | body' <- shrink body]
+  shrink (BinaryExpr (Binary l tok r)) =
+    exprLeaves
+      ++ [l, r]
+      ++ [BinaryExpr (Binary l' tok r') | (l', r') <- shrink (l, r)]
+  shrink (CallExpr (Call callee tok args)) =
+    exprLeaves
+      ++ (callee : args)
+      ++ [ CallExpr (Call callee' tok args') | (callee', args') <- shrink (callee, args)
+         ]
+  shrink (ConditionalExpr (Conditional cond matched unmatched)) =
+    exprLeaves
+      ++ [cond, matched, unmatched]
+      ++ [ ConditionalExpr (Conditional cond' matched' unmatched')
+         | (cond', matched', unmatched') <- shrink (cond, matched, unmatched)
+         ]
+  shrink (DollarExpr (Dollar _)) = []
+  shrink (GetExpr (Get obj tok)) = exprLeaves ++ [obj] ++ [GetExpr (Get obj' tok) | obj' <- shrink obj]
+  shrink (GroupingExpr (Grouping expr)) =
+    exprLeaves
+      ++ [expr]
+      ++ [GroupingExpr (Grouping expr') | expr' <- shrink expr]
+  shrink (IndexExpr (Index indexed tok index)) =
+    exprLeaves
+      ++ [indexed, index]
+      ++ [ IndexExpr (Index indexed' tok index')
+         | (indexed', index') <- shrink (indexed, index)
+         ]
+  shrink (LiteralExpr (Literal _)) = []
+  shrink (LogicalExpr (Logical l tok r)) =
+    exprLeaves
+      ++ [l, r]
+      ++ [ LogicalExpr (Logical l' tok r')
+         | (l', r') <- shrink (l, r)
+         ]
+  shrink (ObjectInitializerExpr (ObjectInitializer tok entries)) =
+    exprLeaves
+      ++ mapMaybe snd entries
+      ++ [ ObjectInitializerExpr (ObjectInitializer tok entries')
+         | entries' <- shrink entries
+         ]
+  shrink (UnaryExpr (Unary tok r)) = exprLeaves ++ [r] ++ [UnaryExpr (Unary tok r') | r' <- shrink r]
+  shrink (VariableExpr (Variable _)) = []
+```
+
+When QuickCheck goes to shrink a value, it will call its defined `shrink` function to produce an ordered list of candidates from which it will try to pick a simpler counterexample.[^11] By default, `shrink` produces an empty list and thus QuickCheck will not try to simplify counterexamples, but meticulously implementing `shrink` for complex recursive structures like `Expr` has a substantial payoff. From the test output above, we see that QuickCheck was able to simplify a parse tree counterexample to a single `GetExpr` node after just three shrinks! Analyzing the `GetExpr`, I deduced that it corresponds to the following hson program.
+
+```ts
+leaf.let
+```
+
+Then, I recognized the bug: my parser rejected `leaf.let` because the property `let` is a reserved word in my language, and the `identifier` parser combinator I used to parse object properties fails when it encounters reserved words.
+
+```hs
+parseGet :: HSONParser (Expr -> Expr)
+parseGet = do
+  dot
+  property <- identifier -- `identifier` fails if the parsed string is a reserved word
+  return $ \object -> GetExpr Get{object = object, property = property}
+```
+
+The failed test also made me consider that my parser might be rejecting reserved words that appear as properties in object literal expressions like the following:
+
+```ts
+{ false: true }
+```
+
+Indeed, when I ran this program through my interpreter, I encountered an error.
+
+```txt
+(line 1, column 8):
+unexpected reserved word "false"
+expecting expression
+```
+
+And I discovered that the cause was, again, my use of the `identifier` parser combinator.
+
+```hs
+keyValue = do
+  k <- try tokenString <|> identifier -- the culprit!
+  colon
+  v <- expression
+  return (k, Just v)
+```
+
+This behavior of the hson parser is unintentional and potentially disruptive. For example, it would prevent a user who parsed a JSON object with the property `let` from being able to access that property by using `$.let`. So, thanks to the power of property-based testing, I discovered bugs preventing reserved words from being defined and accessed as properties of objects. This is an edge cases that I might not have considered while writing unit tests, and was identified only because QuickCheck ran thousands of randomly-generated test inputs against my parser.
 
 [^1]: Check out [my article about testing parsers with QuickCheck!](/posts/testing-parsers-thoroughly-with-property-based-testing)
 [^2]: See [QuickCheck: a lightweight tool for random testing of Haskell programs](https://dl.acm.org/doi/10.1145/351240.351266)
+[^3]: See [Parsec: Direct Style Monadic Parser Combinators For The Real World](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/parsec-paper-letter.pdf)
+[^4]: See [The Quality of Junit Tests](https://www.researchgate.net/profile/Dor-Maayan/publication/323847238_The_Quality_of_Junit_Tests/links/5aec525a458515f59982137e/The-Quality-of-Junit-Tests.pdf)
+[^5]: See [What Is Software Testing, And Why Is It So Hard?](https://d1wqtxts1xzle7.cloudfront.net/31144056/Testing.pdf?1366313461=&response-content-disposition=inline%3B+filename%3DWhat_is_software_testing_And_why_is_it_s.pdf&Expires=1709918337&Signature=TFFQ65RMP~MqphSli4WfSFg1RU3YAE7MZtC-EHRlIwFzeSu8Lzeb1Ij901fBg~3-GZpmiafRRKRvrpVPJ1zg3SyT~-Jzt1dNlicHekeiOofGYOe7vE3oLw4TkgOnsGDEQdXtOW3XKKROUFOwY0rsl~McE8GkNeUCsS0pWQeHoKzxUVOgmqgWsa7HhTIXevukc7hrJe6RL9hWQed-oCO1gvgCC~aO~bBaYMd2rOg17kVAFQ4mLQddtbOQPpc7DXAKiOsQaiJMVVpCgK4Z14PCyYnZtIzNP9WzylVdeU15G557ZJKxkGJiaj4bipQIwT2sN7aZdmcKUdBPZ4tLGf3KYA__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA)
+[^6]: See [A Survey of Unit Testing Practices](https://www.sast.se/q-moten/2007/stockholm/q1/2007_q1_runeson_artikel.pdf)
+[^7]: See [How Functional Programming Mattered](https://academic.oup.com/nsr/article/2/3/349/1427872)
+[^8]: See [Parsec Parser Testing with QuickCheck](https://lstephen.wordpress.com/2007/07/29/parsec-parser-testing-with-quickcheck/)
+[^9]: See [A prettier printer](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=ea8492f775ed0087b0499073d1c31ae379eb311f)
+[^10]: See [The Design of a Pretty-printing Library](https://www.researchgate.net/profile/John-Hughes-22/publication/226525714_The_Design_of_a_Pretty-printing_Library/links/00b4952bf4212ca968000000/The-Design-of-a-Pretty-printing-Library.pdf)
+[^11]: See [Experiences with QuickCheck: Testing the Hard Stuff and Staying Sane](https://link.springer.com/chapter/10.1007/978-3-319-30936-1_9)
+[^12]: See [Reflecting on Random Generation](https://dl.acm.org/doi/pdf/10.1145/3607842)
 
 import withLayout from '../../lib/withLayout'
 export default withLayout(frontmatter)
