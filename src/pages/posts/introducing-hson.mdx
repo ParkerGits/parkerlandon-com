@@ -76,7 +76,7 @@ $ hson --hf script.hson --jf restaurants.json
 ]
 ```
 
-We can also declare variables with the `let` keyword. For example, we can define a function `filterSeattleRestaurants` that applies the `filter` and `map` operations from above. Applying that function to `$` gives us the same output as before.
+We can also declare variables with the `let` keyword. For example, we can define a function `filterSeattleRestaurants` that applies the `filter` and `map` operations from above.
 
 ```js
 let filterSeattleRestaurants = |restaurants| =>
@@ -84,6 +84,28 @@ let filterSeattleRestaurants = |restaurants| =>
     |> filter(|restaurant| => restaurant.city == "Seattle")
     |> map(|restaurant| => restaurant.name);
 filterSeattleRestaurants($)
+```
+
+Applying that function to `$` gives us the same output as before.
+
+We can also index arrays with the standard square bracket notation. The following snippet gets the restaurant at index `1` in the input JSON and prints out its `name`.
+
+```js
+let restaurant = $[1];
+restaurant.name
+```
+
+```txt
+$ hson --hf script.hson --jf restaurants.json
+Smashing Sushi
+```
+
+Like JavaScript, hson also provides array and object _destructuring_ for accessing array indices and object properties. The following script produces the same result ("Smashing Sushi") but utilizes destructuring.
+
+```js
+let [_, restaurant] = $;
+let { name } = restaurant;
+name
 ```
 
 As a more sophisticated example, consider the following JSON representation of a Turing Machine, where the `start`, `accept`, and `reject` fields name the start, stop, and reject states respectively, and the `delta` field contains information about each state transition.
@@ -131,9 +153,9 @@ $.delta.reduce(|accumulator, transitions| =>
   , 0)
 ```
 
-The `reduce` function is inspired by Haskell's `foldr` operation and is nearly identical to the `reduce` array method from JavaScript. Its responsibility in the script above is to keep track of the transition count. The `some` function also has a near-identical analog in JavaScript: it returns true if any element in the provided array satisifes its predicate function.In the script above, it returns true if any transitions from a given state result in the reject state. Finally, the ternary operator `?` conditionally adds one to the accumulator if the transition results in a reject state.
+The `reduce` function is inspired by Haskell's `foldr` operation and is nearly identical to the `reduce` array method from JavaScript. Its responsibility in the script above is to keep track of the transition count. The `some` function also has a near-identical analog in JavaScript: it returns true if any element in the provided array satisifes its predicate function. In the script above, it returns true if the result of any transition from a given state is the reject state. Finally, the ternary operator `?` conditionally adds one to the accumulator if the transition result is the reject state.
 
-We can abstract the logic of conditionally tallying list elements to a higher-order function `countWhere`, which will again use `reduce` and the ternary operator to count the elements that satisfy a given predicate function.
+We can abstract the logic of conditionally tallying list elements to a higher-order function `countWhere`, which will again utilize `reduce` and the ternary operator to count the elements that satisfy a given predicate function.
 
 ```js
 let countWhere = |list, predicate| =>
@@ -142,7 +164,7 @@ let countWhere = |list, predicate| =>
   , 0);
 ```
 
-We can now rewrite our original reject-transition counting script to employ `countWhere`, with the provided predicate being the `some` function from before.
+We now rewrite our original reject-transition counting script to employ `countWhere`, with the provided predicate being the `some` function from before.
 
 ```js
 $.delta |>
@@ -152,8 +174,6 @@ $.delta |>
     )
   )
 ```
-
-The beauty of hson as a domain-specific language is that if `countWhere` is a sufficiently common operation, it can be implemented as a built-in function without much friction.
 
 In general, an hson script is a sequence of zero or more variable declarations followed by a single expression. The output of a script is the result of the evaluated final expression. Variables in hson are immutable: once they are defined, they cannot be redefined, and their values cannot be changed. Values in hson are computed solely from compositions of functions, so hson is itself a functional language.
 
@@ -171,7 +191,7 @@ In the following sections, I walk through the implementation details of hson wit
 
 ### Parsing
 
-As previously mentioned, an hson program comprises a series of zero or more variable declarations followed by a single expression, as illustrated by the following type definition.
+As mentioned, an hson program comprises a series of zero or more variable declarations followed by a single expression, as illustrated by the following type definition.
 
 ```hs
 type Program = ([VarStmt], Expr)
@@ -182,7 +202,7 @@ The `program` function within the `Parser` module is the entry point for the rec
 ```hs
 program :: HSONParser Program
 program = do
-  declarations <- many varDecl
+  declarations <- many declaration
   expr <- expression
   eof
   return (declarations, expr)
@@ -190,12 +210,34 @@ program = do
 
 The definition of `program` is expressive enough that even a Haskell novice could intuit the semantics of each line
 
-1. Parse many variable declarations
+1. Parse many (variable) declarations
 2. Parse an expression
 3. Expect the end of the input
 4. Return the `Program` parse result
 
-The Haskell parser is implemented using the [Parsec](https://hackage.haskell.org/package/parsec-3.1.17.0/docs/Text-Parsec.html) library, which contains types and primitives for composing monadic parser combinators.[^3]
+Each function called within the `do` block of `program`—`many`, `declaration`, `expression`, and `eof`—are themselves functions which return a parse result. The `declaration` function, for example, parses variable declarations like
+
+```ts
+let sum = 1 + 2;
+```
+
+and returns a `VarStmt` parse result.
+
+```hs
+declaration :: HSONParser VarStmt
+```
+
+This ability to sequence parse operations within the `do` block is afforded by the monadic `HSONParser` type, which wraps the result of every parse operation. Inspecting the definition of `HSONParser`, we find that it is simply an alias for the `ParsecT` type.
+
+```hs
+type HSONParser = ParsecT T.Text () Identity
+```
+
+> sequencing of parsers with the do notation
+> parser monad
+> provided by the parsec library
+
+The hson parser is implemented using the [Parsec](https://hackage.haskell.org/package/parsec-3.1.17.0/docs/Text-Parsec.html) library, which contains types and primitives for composing monadic parser combinators.[^3]
 
 > Parser combinator explanation
 
