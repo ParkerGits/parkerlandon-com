@@ -406,6 +406,62 @@ runReader welcomeFirstInitial "Parker"
 -- "Welcome back, P."
 ```
 
+In [hson](/posts/introducing-hson), the `Reader` monad is used in the interpreter to access the program envionment, which is a map that associates variable identifiers with the values they are bound to. The hson interpreter also utilizes the `Except` monad, which adds error handling to its computations. The type `Except e a` represents a computation that either produces a successful result of type `a` or produces an error result of type `e`.[^9] Within an `Except` computation, we can call `throwError :: e -> Except e a` to signal an error. In the following code snippet, we create a new `safeSqrt2` function that produces a result of type `Except String Float`.
+
+```hs
+-- Original `safeSqrt` with Maybe result
+safeSqrt :: Float -> Maybe Float
+safeSqrt x = if x < 0 then Nothing else Just (sqrt x)
+
+-- New `safeSqrt` with Except String result
+safeSqrt2 :: Float -> Except String Float
+safeSqrt2 x = if x < 0 then throwError "Received negative input!" else return (sqrt x)
+```
+
+The benefit of using an `Except String` result over a `Maybe` result is that we can use `throwError` within `Except` to provide contextual information about a failure. Now, when we run the `Except String Float` computation with `runExcept`, we receive an `Either String Float` result that represents a successful computation in `Right Float` or an error message in `Left String`.
+
+```hs
+runSafeSqrt2 x = runExcept (safeSqrt2 x)
+
+runSafeSqrt2 4 -- Right 2.0
+runSafeSqrt2 16 -- Right 4.0
+runSafeSqrt2 (-1) -- Left "Received negative input!"
+```
+
+### Monad Transformers and Composing Monads
+
+While the features of the `Reader` and `Except` monads are useful alone, they become remarkably powerful when joined in _composition_. The _monad transformer_ framework allows us to compose monads and combine their features into a single custom monad.[^8] [^9] By inspecting the definitions of `Reader` and `Except`, we find that they are aliases for specific instances of the `ReaderT` and `ExceptT` monad _transformers_ that compose the `Identity` monad.
+
+```hs
+type Reader r a = ReaderT r Identity a
+type Except e a = ExceptT e Identity a
+```
+
+The `Identity` monad is trivial: it provides no features and represents "no effect".[^8] [^9] So, the `Reader` and `Except` monads are special cases of the `ReaderT` and `ExceptT` monad transformers, where the nested monad in composition is `Identity`.
+
+We can compose `ReaderT` and `ExceptT` to produce a new custom monad, `Eval`, that provides _both_ access to a read-only environment and error handling.
+
+```hs
+type Eval a = ReaderT String (ExceptT String Identity) a
+```
+
+The outermost `ReaderT` monad has `ExceptT` as its base, and the `ExceptT` monad has `Identity` as its base. Now, when we run an `Eval` computation, we use `runReaderT`, `runExceptT`, and `runIdentity` to unwrap all the monad transformers and obtain our final `Either String a` result.
+
+```hs
+runEval :: Eval a -> Either String a
+runEval x = runIdentity $ runExceptT $ runReaderT x "Initial Environment"
+```
+
+Monad transformers also allow us to integrate effectful computations by changing the innermost `Identity` monad to `IO`. Now, when we apply `runReaderT` and `runExceptT`, we obtain an `IO (Either String a)` result.
+
+```hs
+type Eval a = ReaderT String (ExceptT String IO) a
+
+runEval :: Eval a -> IO (Either String a)
+runEval x = runExceptT $ runReaderT x "Initial Environment"
+```
+
+The [hson](/posts/introducing-hson) interpreter utilizes the `ReaderT`, `ExceptT`, and `IO` monad transformers in this way to integrate read-only environment access, error handling, and I/O effects.
 
 [^1]: See [How Functional Programming Mattered](https://academic.oup.com/nsr/article/2/3/349/1427872)
 [^2]: See [A History of Haskell](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/history.pdf)

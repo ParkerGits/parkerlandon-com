@@ -179,9 +179,10 @@ In general, an hson script is a sequence of zero or more variable declarations f
 
 The hson program is responsible for
 
-- parsing command line options
-- parsing the input JSON, converting each value to an hson value and binding the root value to `$`
+- reading the hson, JSON, and command line options
+- parsing command-line options
 - parsing the input hson script
+- parsing the input JSON, converting each value to an hson value and binding the root value to `$`
 - interpreting the input script
 - reporting any syntax or runtime errors that occur
 
@@ -191,13 +192,106 @@ In the following sections, I walk through the implementation details of hson wit
 
 ### Parsing
 
+Examining the `main` function of hson, we find that it first reads and parses the command-line options, then reads the input hson script and JSON data, then calls `run`.
+
+```hs
+main :: IO ()
+main = do
+  opts <- hsonOpts
+  hsonIn <- readHSON $ hsonInputOpt opts
+  jsonIn <- readJSON $ jsonInputOpt opts
+  run jsonIn hsonIn opts
+```
+
+The `run` function runs the hson parser on the input hson script. Then, if the hson parse was successful, `run` calls `runProg`, which parses the input JSON if it was given and evaluates the hson script, eventually printing its result.
+
+```hs
+runProg :: Maybe BL.ByteString -> Program -> IO ()
+runProg Nothing prog = runInterpretNoJSON prog >>= printResult
+runProg (Just json) prog = case decode json of
+  Left err -> print . JSONParsingError $ T.pack err
+  Right json -> runInterpretWithJSON json prog >>= printResult
+```
+
+The following sections highlight the techniques used to implement hson's three separate parse responsibilities: command-line options, hson script, and JSON data.
+
+#### The hson Parser
+
 As mentioned, an hson program comprises a series of zero or more variable declarations followed by a single expression, as illustrated by the following type definition.
 
 ```hs
 type Program = ([VarStmt], Expr)
 ```
 
-The `program` function within the `Parser` module is the entry point for the recursive descent parser; it's responsible for parsing and constructing a `Program` value.
+The hson parser is responsible for parsing an input according to the grammar rules and constructing the appropriate `Program` value, which represents the root of the hson parse tree.
+
+A `VarStmt` represents some variable declared with either a standalone identifier, a destructured array, or a destructured object.
+
+```hs
+data VarStmt
+  = VarDeclStmt VarDecl
+  | ObjectDestructureDeclStmt ObjectDestructureDecl
+  | ArrayDestructureDeclStmt ArrayDestructureDecl
+```
+
+The following code snippet illustrates each kind of variable declaration.
+
+```js
+let restaurants = $; // identifier
+let [_, secondRestaurant] = restaurants; // destructured array
+let { name } = secondRestaurant; // destructured object
+...
+```
+
+An `Expr` represents any expression node in the hson parse tree.
+
+```hs
+data Expr
+  = ArrayInitializerExpr ArrayInitializer
+  | ArrowFunctionExpr ArrowFunction
+  | BinaryExpr Binary
+  | CallExpr Call
+  | ConditionalExpr Conditional
+  | DollarExpr Dollar
+  | GetExpr Get
+  | GroupingExpr Grouping
+  | IndexExpr Index
+  | LiteralExpr Literal
+  | LogicalExpr Logical
+  | ObjectInitializerExpr ObjectInitializer
+  | UnaryExpr Unary
+  | VariableExpr Variable
+  deriving (Show, Eq)
+```
+
+The simple program `1+2`, for example, produces a `Program` value with an empty `VarStmt` list and a `BinaryExpr` as the root of the `Expr` tree.
+
+```hs
+( []
+, BinaryExpr
+  ( Binary
+      { binLeft =
+          LiteralExpr
+            ( Literal
+                { litTok =
+                    Token{tokenType = TokenNumber, literal = Just 1, pos = (line 1, column 1)}
+                }
+            )
+      , binOp =
+          Token{tokenType = TokenPlus, literal = Nothing, pos = (line 1, column 3)}
+      , binRight =
+          LiteralExpr
+            ( Literal
+                { litTok =
+                    Token{tokenType = TokenNumber, literal = Just 2, pos = (line 1, column 5)}
+                }
+            )
+      }
+  )
+)
+```
+
+The `program` function within hson's parser corresponds to the start rule of the hson grammar and is the entry point for the recursive descent parser.
 
 ```hs
 program :: HSONParser Program
@@ -227,23 +321,275 @@ and returns a `VarStmt` parse result.
 declaration :: HSONParser VarStmt
 ```
 
-This ability to sequence parse operations within the `do` block is afforded by the monadic `HSONParser` type, which wraps the result of every parse operation. Inspecting the definition of `HSONParser`, we find that it is simply an alias for the `ParsecT` type.
+This ability to sequence parse operations within the `do` block is afforded by the monadic `HSONParser` type, which wraps the result of every parse operation. Inspecting the definition of `HSONParser`, we find that it is an alias for the `ParsecT` type.
 
 ```hs
-type HSONParser = ParsecT T.Text () Identity
+type HSONParser = ParsecT Text () Identity
 ```
 
-> sequencing of parsers with the do notation
-> parser monad
-> provided by the parsec library
+The `ParsecT` type is a monad transformer provided by the [Parsec](https://hackage.haskell.org/package/parsec-3.1.17.0/docs/Text-Parsec.html) library. Parsec provides this type, which defines sequencing, failure, and error handling operations for parse results, alongside several primitive _parser combinators_, which are parse operations like `many` that can be sequenced and composed to produce more complex parsers.[^3] A `ParsecT` result has 4 type parameters, `s u m a`, where `s` is the type of the input, `u` is the the type of some user state, `m` is an underlying monad, and `a` is the type of the parse result. Thus, the `HSONParser` type is simply a `ParsecT` computation with no user state, `Identity` as the base monad ("no effect"), and an input of type `Text`, which is a time and space-efficient Unicode character string representation.[^13]
 
-The hson parser is implemented using the [Parsec](https://hackage.haskell.org/package/parsec-3.1.17.0/docs/Text-Parsec.html) library, which contains types and primitives for composing monadic parser combinators.[^3]
+To run a parse computation, we call it with `runParsecT`, providing the input string, the initial user state, and an optional source name argument (e.g., the input file name). The hson parser begins its descent at the `program` function, has no user state, and specifies no source name.
 
-> Parser combinator explanation
+```hs
+runHSONParser :: T.Text -> Either ParseError Program
+runHSONParser s = runHSONParser' s program
 
-We can inspect the `HSONParser` type to find that it's an alias for the `ParsecT` type
+runHSONParser' :: T.Text -> HSONParser a -> Either ParseError a
+runHSONParser' s p = runIdentity $ runParserT p () "" s
+```
 
-> explain monad transformers in background
+The result of an `HSONParser Program` computation is `Either ParseError Program`, which captures the possibility of failure while parsing `program`.
+
+The first step of parsing an hson script is parsing a sequence of zero or more variable declarations. The `declaration` function handles each kind of variable declaration and produces `VarStmt` result. The `parseVarDecl`, `parseObjDestDecl`, and `parseArrDestDecl` handle parsing identifiers, destructured objects, and destructured arrays, respectively.
+
+```hs
+declaration :: HSONParser VarStmt
+declaration = do
+  letVar
+  stmt <-
+    try parseVarDecl
+      <|> try parseObjDestDecl
+      <|> try parseArrDestDecl
+      <?> "identifier, destructured object, or destructured array"
+  equal
+  initializer <- expression
+  semicolon
+  return $ stmt initializer
+```
+
+The `(<|>)` operator is called the "choice combinator". If the parse result on the left-hand side of `<|>` is successful, it returns that parse result; otherwise, it returns the parse result on its right hand side. We combine the choice operator with the `try` combinator to implement arbitrary lookahead. Without the application of `try`, a parser will consume input even when it fails. The `try p` parser performs the parse operation `p` but pretends to not have consumed any input when it fails.[^3] Thus, combining `try` with choice produces parsers that attempt to parse several alternative productions before failing.
+
+The `<?>` operator is used to apply a high-level label to a parser so that, when it fails without consuming input, the associated error message includes that label.[^3] For example, consider an incorrect hson program that uses pipe characters (`||`) instead of square brackets (`[]`).
+
+```js
+let |_, secondRestaurant| = restaurants;
+secondRestaurant
+```
+
+When run, hson gives the following error (which is produced by Parsec).
+
+```txt
+(line 1, column 5):
+unexpected "|"
+expecting identifier, destructured object, or destructured array
+```
+
+Without the above use of `<?>`, the failed `declaration` parser produces a character-level error message instead.
+
+```txt
+unexpected "|"
+expecting identifier, "{" or "["
+```
+
+In the definition of `declaration`, the result of `parseVarDecl`, `parseObjDestDecl`, or `parseArrDestDecl` (whichever succeeds) is bound to `stmt`.
+
+```hs
+stmt <-
+  try parseVarDecl
+    <|> try parseObjDestDecl
+    <|> try parseArrDestDecl
+    <?> "identifier, destructured object, or destructured array"
+```
+
+Each of the three parse functions returns the same result: `HSONParser (Expr -> VarStmt)`. Thus, within the `do` block, `stmt` has type `Expr -> VarStmt` and is a _function_ that maps an expression to a variable statement. When `declaration` returns, the `stmt` function is finally applied to the parsed initializer expression, producing the resulting `VarStmt`.
+
+```hs
+initializer <- expression
+semicolon
+return $ stmt initializer
+```
+
+This pattern of returning functions as parse results solves situations where a data type like `VarStmt` is the target parse result but a necessary value (e.g., an `Expr` value) is parsed _later_. In this case, the intializer expression necessary to produce a `VarStmt` is parsed after the identifier or destructured object/array, so `parseVarDecl`, `parseObjDestDecl`, and `parseArrDestDecl` each produce a function that takes an eventual `Expr` to produce a `VarStmt`. The `parseVarDecl` function, for example, is simply responsible for parsing an identifier, but returns a function that will eventually produce a `VarStmt`.
+
+```hs
+parseVarDecl :: HSONParser (Expr -> VarStmt)
+parseVarDecl = do
+  declName <- identifier
+  return $
+    \expr -> VarDeclStmt VarDecl{declName = declName, initializer = expr}
+```
+
+In an imperative language, one might return a partially-constructed `VarStmt` from a function like `parseVarDecl` and utilize mutability or reassignment to eventually supply it with the initializer expression. However, if the caller fails to eventually provide that initializer expression, a `VarStmt` could float around the program with missing data and produce undesired outcomes. Thus, while the immutability restrictions and strong type system of Haskell demand thoughtful solutions, they help mitigate uncertainty by eliminating the possibility of partially-constructed and ever-changing values.
+
+For each production in the hson grammar, the hson parser has an associated function that utilizes parser combinators and techniques like those found in the definition of `declaration`. Moving back up to the `program` function, we find that it calls `declaration` with the `many` parser, which applies the `declaration` parser zero or more times and returns a list of parse results.[^15]
+
+```hs
+program :: HSONParser Program
+program = do
+  declarations <- many declaration
+  expr <- expression
+  eof
+  return (declarations, expr)
+```
+
+Next, `program` calls `expression`, which is responsible for producing the root `Expr` node that will be evaluated and output by hson. The `expression` function descends through orders of precedence, eventually parsing logical expressions like the nullish-coalescing operator `??`, the logical "or" operator `||`, and the logical "and" operator `&&`.
+
+```hs
+nullCoalesce :: HSONParser Expr
+nullCoalesce = do
+  chainl1 logicOr parseNullCoalesce
+ where
+  parseNullCoalesce = parseLogicalOp questionQuestion
+
+logicOr :: HSONParser Expr
+logicOr = do
+  chainl1 logicAnd parseOr
+ where
+  parseOr = parseLogicalOp orOr
+
+logicAnd :: HSONParser Expr
+logicAnd = do
+  chainl1 equality parseAnd
+ where
+  parseAnd = parseLogicalOp andAnd
+```
+
+The `chainl1` combinator is common to each of these logical expression parsers; its responsibility is to parse left-associative binary operations. Specifically, `chainl1` one or more occurrences of a particular expression, each separated by an operator. The first argument to `chainl1` is an expression parser, `HSONParser Expr`, and the second argument is an operator parser with type `HSONParser (Expr -> Expr -> Expr)`. The operator parser is responsible for parsing an operator token (e.g., the "logical and" operator `&&`) and returning a function that produces a higher-level expression from left-hand and right-hand side expressions. The final result of `chainl1` is the result of left-associative application of each function returned by the operator parser to each operand expression parse result. Effectively, `chainl1` encodes left-associativity while eliminating left-recursion.[^3] [^15] It is also utilized by each left-associative binary expression parser.
+
+```hs
+equality :: HSONParser Expr
+equality = do
+  chainl1 comparison (try parseNeq <|> parseEq)
+ where
+  parseEq = parseBinaryOp equalEqual
+  parseNeq = parseBinaryOp bangEqual
+
+comparison :: HSONParser Expr
+comparison = do
+  chainl1 term (try parseGte <|> try parseGt <|> try parseLte <|> parseLt)
+ where
+  parseGt = parseBinaryOp greater
+  parseGte = parseBinaryOp greaterEqual
+  parseLt = parseBinaryOp less
+  parseLte = parseBinaryOp lessEqual
+
+term :: HSONParser Expr
+term = do
+  chainl1 factor (try parsePlus <|> parseMinus)
+ where
+  parseMinus = parseBinaryOp minus
+  parsePlus = parseBinaryOp plus
+
+factor :: HSONParser Expr
+factor = do
+  chainl1 unary (try parseDiv <|> parseMult)
+ where
+  parseMult = parseBinaryOp star
+  parseDiv = parseBinaryOp slash
+```
+
+In general, the hson parser is the `program` parser, which itself is a composition of sequences of more specific parsers, each of which comprise several more fundamental parsers, with the most fundamental parsers being provided by Parsec. Eventually, the recursive descent parses the terminals in the hson language grammar. The array initializer expression parser, for example, is simply the `brackets` parser applied to the `arguments` parser, thus parsing a comma-separated list of expressions between a pair of square brackets `[]`. The parser also records its position and the relevant token for producing friendly error messages within the hson interpreter.
+
+```hs
+parseArray :: HSONParser Expr
+parseArray = do
+  bracketPos <- getPosition
+  elems <- brackets arguments
+  return $
+    ArrayInitializerExpr
+      ArrayInitializer
+        { bracket =
+            Token{tokenType = TokenLeftBracket, literal = Nothing, pos = bracketPos}
+        , elements = elems
+        }
+```
+
+Parser combinators are a powerful tool for implementing parsers. From a relatively small collection of combinators (like that which Parsec provides), one can quickly encode an entire language grammar through composition and sequencing. Moreover, the declarative style of parser combinators results in parser code that _looks_ like the associated grammar, with each function corresponding to a variable and each definition corresponding to the associated production. Additionally, utilizing parser combinators gives the parser access to Haskell's many features and allows its parse results to be easily integrated with the rest of the Haskell program.
+
+#### JSON Parsing
+
+The hson program also takes JSON data as an optional input and makes it available via the `$` identifier. However, before hson can bind the JSON data to `$`, it must first convert it into the appropriate hson value.
+
+The following `HSONValue` data type represents all values within an HSON program
+
+```hs
+data HSONValue
+  = Function Func
+  | Method (HSONValue -> Func)
+  | Lambda Func Environment
+  | Array (V.Vector HSONValue)
+  | Object (Map.Map T.Text HSONValue)
+  | String T.Text
+  | Number Scientific
+  | Bool Bool
+  | Null
+```
+
+The goal of the JSON parser within hson is to construct the appropriate `HSONValue` for each node in the JSON parse tree. The popular Haskell library `aeson` makes this JSON parsing task simple: it provides a typeclass `FromJSON` with an associated `parseJSON` operation.[^16]
+
+```hs
+class FromJSON a where
+  parseJSON :: Value -> Parser a
+```
+
+The `Value` type represents a JSON value as a Haskell value.
+
+```hs
+data Value
+  = Object !Object
+  | Array !Array
+  | String !Text
+  | Number !Scientific
+  | Bool !Bool
+  | Null
+```
+
+Then, to construct a particular data type from JSON, we declare that data type to be an instance of `FromJSON` and provide the appropriate definition of `parseJSON`. In the case of `HSONValue`, the `parseJSON :: Value -> HSONValue` function maps JSON arrays to HSON arrays, JSON objects to HSON objects, etc.
+
+```hs
+-- `A` is the `aeson` namespace, `H` is the `hson` namespace
+instance A.FromJSON H.HSONValue where
+  parseJSON (A.Array v) = H.Array <$> mapM parseJSON v
+  parseJSON (A.Object v) = H.Object <$> mapM parseJSON (A.toMapText v)
+  parseJSON (A.String v) = return $ H.String v
+  parseJSON (A.Number v) = return $ H.Number v
+  parseJSON (A.Bool v) = return $ H.Bool v
+  parseJSON A.Null = return H.Null
+```
+
+Now, we can decode the JSON with `eitherDecode`, which produces an `Either String HSONValue` value where the `Right` result contains the parsed JSON and the `Left` result contains an error message. If the JSON parse was successful, hson runs the interpreter with the parsed hson script and JSON data. Otherwise, hson prints the JSON parsing error.
+
+```hs
+runProg (Just json) prog = case eitherDecode json of
+  Left err -> print . JSONParsingError $ T.pack err
+  Right parsedJSON -> runInterpretWithJSON parsedJSON prog >>= printResult
+```
+
+#### Applicative Command Line Option Parsing
+
+The hson CLI accepts a few options that must also be parsed and handled. Invoking `hson` with the `--help` flag gives the following output that lists each available option.
+
+```txt
+hson - json processing language
+
+Usage: hson ((--hf|--hfile|--hsonfile filename.hson) | hson script)
+            [(--jf|--jfile|--jsonfile filename.json) | (-n|--no-json)]
+            [-a|--ast] [-p|--pretty-print] [-o|--omit-eval]
+
+  Parse JSON according to given hson input.
+
+Available options:
+  --hf,--hfile,--hsonfile filename.hson
+                           hson input file.
+  hson script              hson script to be run.
+  --jf,--jfile,--jsonfile filename.json
+                           JSON input file.
+  -n,--no-json             Run hson without a JSON input.
+  -a,--ast                 Print the hson parse tree.
+  -p,--pretty-print        Pretty print the provided hson script.
+  -o,--omit-eval           Omit the evaluated expression output.
+  -h,--help                Show this help text
+```
+
+To summarize,
+
+- The input hson script can be provided from the command line or from a file with the `-hf` flag.
+- By default, hson reads JSON from `stdin`. The JSON data can instead be read from a file with the `-jf` flag, or hson can be run without JSON with the `-n` flag.
+- The other flags are used for debugging purposes.
+  - The `-a` flag prints the parse tree generated from the provided hson script.
+  - The `-p` flag pretty-prints the provided hson script.
+  - The `-o` flag prevents hson from printing the evaluated expression.
 
 ### Testing
 
@@ -525,6 +871,10 @@ This behavior of the hson parser is unintentional and potentially disruptive. Fo
 [^10]: See [The Design of a Pretty-printing Library](https://www.researchgate.net/profile/John-Hughes-22/publication/226525714_The_Design_of_a_Pretty-printing_Library/links/00b4952bf4212ca968000000/The-Design-of-a-Pretty-printing-Library.pdf)
 [^11]: See [Experiences with QuickCheck: Testing the Hard Stuff and Staying Sane](https://link.springer.com/chapter/10.1007/978-3-319-30936-1_9)
 [^12]: See [Reflecting on Random Generation](https://dl.acm.org/doi/pdf/10.1145/3607842)
+[^13]: See [text: An efficient packed Unicode text type](https://hackage.haskell.org/package/text)
+[^14]: See [Combinator Parsing: A Short Tutorial](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=07f63cfff2063606180070106192d5be5cf87fc8)
+[^15]: See [parsec: Monadic parser combinators](https://hackage.haskell.org/package/parsec)
+[^16]: See [aeson: Fast JSON parsing and encoding](https://hackage.haskell.org/package/aeson)
 
 import withLayout from '../../lib/withLayout'
 export default withLayout(frontmatter)

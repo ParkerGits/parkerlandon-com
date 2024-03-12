@@ -37,7 +37,7 @@ export function TypographyH3({ children, className }: TypographyProps) {
 
 export function TypographyH4({ children }: TypographyProps) {
   return (
-    <h4 className="scroll-m-20 text-xl font-medium font-heading tracking-tight">
+    <h4 className="scroll-m-20 text-xl font-medium font-heading tracking-tight mt-8">
       {children}
     </h4>
   );
