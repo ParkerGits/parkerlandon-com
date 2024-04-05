@@ -11,6 +11,7 @@ import {
 import { DialogClose, DialogDescription } from "@radix-ui/react-dialog";
 import { TypographyUL } from "../typography";
 import AnchorText from "../typography/anchor-text";
+import LoomEmbed from "./loom-embed";
 
 interface PortfolioCardDetailsButtonProps {
   item: PortfolioItem;
@@ -27,6 +28,7 @@ export default function PortfolioCardDetailsDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{item.title}</DialogTitle>
+          {item.loomUrl && <LoomEmbed url={item.loomUrl} />}
           <DialogDescription>{item.longDescription}</DialogDescription>
           <TypographyUL>
             {item.links.map((link) => (

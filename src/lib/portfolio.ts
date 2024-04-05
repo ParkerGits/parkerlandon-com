@@ -72,6 +72,7 @@ export type PortfolioItem = {
   //images?: StaticImageData[]
   links: { text: string; url: string }[];
   tags: PortfolioItemTag[];
+  loomUrl?: string;
 };
 
 export const projects: PortfolioItem[] = [
@@ -101,7 +102,8 @@ export const projects: PortfolioItem[] = [
     title: "hson",
     shortDescription:
       "hson is a scripting language for processing and formatting JSON data. The hson program is a CLI written in Haskell that performs parsing and interpreting.",
-    longDescription: "",
+    longDescription:
+      "The hson program is a command-line interface implemented in Haskell for processing JSON data. Given JSON data and a script written in the hson language, the hson CLI processes the JSON and outputs a result according to the hson script. Emphasizing readability and familiarity, I designed the syntax of hson to be similar to that of JavaScript. I built hson as part of my honors senior capstone project at Seattle Pacific University. The project aimed to illustrate how Haskell can be a practical tool for building correct, maintainable software. Alongside the hson program, I also delivered an academic case study illustrating how I leveraged parser combinators, monad transformers, and QuickCheck to implement the hson parser, interpreter, and property-based testing, respectively.",
     emoji: "🪄",
     //images: [HngrList, HngrSearch],
     links: [
@@ -112,11 +114,13 @@ export const projects: PortfolioItem[] = [
       PortfolioItemTag.CLI,
       PortfolioItemTag.INTERPRETER,
     ],
+    loomUrl:
+      "https://www.loom.com/share/935788ad6ff744659a1cba75ba28cd7b?sid=7e76b45c-e816-4cff-86d9-e48ceb8abd3a",
   },
   {
     title: "gograph",
     shortDescription:
-      "The gograph package implements graph algorithms and data types in Go. Employs data structures from the gods library to implement common graph algorithms like Shortest Path and Minimum Spanning Tree efficiently.",
+      "The gograph package implements graph algorithms and data types in Go, utilizing data structures from the gods library to implement common graph algorithms like Shortest Path and Minimum Spanning Tree efficiently.",
     longDescription: "",
     emoji: "🔗",
     //images: [PokecommitEncounter, PokecommitFight],
@@ -131,7 +135,7 @@ export const projects: PortfolioItem[] = [
   {
     title: "gods",
     shortDescription:
-      "gods is a package of efficient data structures written in Go. The implemented data structures are stack, queue, set, union-find, and binary heap.",
+      "gods is a Go package of efficient data structures. It includes a generic stack, queue, set, union-find, and binary heap.",
     longDescription: "",
     emoji: "🧱",
     //images: [PokecommitEncounter, PokecommitFight],
@@ -157,7 +161,7 @@ export const projects: PortfolioItem[] = [
     shortDescription:
       "Pokecommit is a wrapper for git commit that employs PokeAPI and MySQL to allow users to catch a Pokemon with each commit.",
     longDescription:
-      "Inspired by my love for Pokemon and a desire to learn the Go programming language, I created this simple CLI wrapper for git commit that allows users to catch a Pokemon with each commit! Pokecommit integrates with PokeAPI to fetch Pokemon data, and uses a local MySQL database to store your team.",
+      "Inspired by my love for Pokemon and a desire to learn the Go programming language, I created this simple CLI wrapper for git commit that allows users to catch a Pokemon with each commit! Pokecommit integrates with PokeAPI to fetch Pokemon data, and uses a local MySQL database to store your box of Pokemon.",
     emoji: "🦑",
     //images: [PokecommitEncounter, PokecommitFight],
     links: [
