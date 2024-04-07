@@ -115,7 +115,7 @@ export const projects: PortfolioItem[] = [
       PortfolioItemTag.INTERPRETER,
     ],
     loomUrl:
-      "https://www.loom.com/share/935788ad6ff744659a1cba75ba28cd7b?sid=7e76b45c-e816-4cff-86d9-e48ceb8abd3a",
+      "https://www.loom.com/share/dd00a9609e0f4f28a604842a2cbd039d?sid=7dd27b52-186f-41e6-9c45-e57619920cdc",
   },
   {
     title: "gograph",
@@ -123,7 +123,6 @@ export const projects: PortfolioItem[] = [
       "The gograph package implements graph algorithms and data types in Go, utilizing data structures from the gods library to implement common graph algorithms like Shortest Path and Minimum Spanning Tree efficiently.",
     longDescription: "",
     emoji: "🔗",
-    //images: [PokecommitEncounter, PokecommitFight],
     links: [
       {
         text: "GitHub repository",
@@ -131,6 +130,8 @@ export const projects: PortfolioItem[] = [
       },
     ],
     tags: [PortfolioItemTag.GO, PortfolioItemTag.PACKAGE],
+    loomUrl:
+      "https://www.loom.com/share/12b8fe2c15ae41f595403bc71377f1db?sid=e499592a-b609-43a3-b14b-57cb6a1f36fc",
   },
   {
     title: "gods",
@@ -146,6 +147,8 @@ export const projects: PortfolioItem[] = [
       },
     ],
     tags: [PortfolioItemTag.GO, PortfolioItemTag.PACKAGE],
+    loomUrl:
+      "https://www.loom.com/share/4eae3ccfc3334c16bbf32ac55ae27c88?sid=c39585db-86fc-46e8-9804-a775259fe25b",
   },
   {
     title: "Scheme/Prolog Transpiler",

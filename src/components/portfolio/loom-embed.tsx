@@ -8,6 +8,7 @@ type LoomEmbedProps = {
 
 export default function LoomEmbed({ url }: LoomEmbedProps) {
   const [embed, setEmbed] = useState<string | undefined>();
+
   useEffect(() => {
     (async () => {
       const result = await loom.oembed(url);

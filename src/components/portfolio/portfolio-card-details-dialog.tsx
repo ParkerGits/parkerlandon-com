@@ -26,7 +26,7 @@ export default function PortfolioCardDetailsDialog({
         <Button size="sm">View Details</Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader className="gap-2">
           <DialogTitle>{item.title}</DialogTitle>
           {item.loomUrl && <LoomEmbed url={item.loomUrl} />}
           <DialogDescription>{item.longDescription}</DialogDescription>
