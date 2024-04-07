@@ -73,6 +73,7 @@ export type PortfolioItem = {
   links: { text: string; url: string }[];
   tags: PortfolioItemTag[];
   loomUrl?: string;
+  youtubeEmbedUrl?: string;
 };
 
 export const projects: PortfolioItem[] = [
@@ -97,6 +98,8 @@ export const projects: PortfolioItem[] = [
       PortfolioItemTag.REST_API,
       PortfolioItemTag.AGILE,
     ],
+    youtubeEmbedUrl:
+      "https://www.youtube.com/embed/qc4yJOIwsgM?si=_E2qCtjzgcZ9LNpa",
   },
   {
     title: "hson",
@@ -183,6 +186,8 @@ export const projects: PortfolioItem[] = [
       PortfolioItemTag.REST_API,
       PortfolioItemTag.CLI,
     ],
+    loomUrl:
+      "https://www.loom.com/share/ffde78e5269d4297a5cb260e9f858a21?sid=b2b555ad-6885-409e-8f3e-a57ddf325778",
   },
   {
     title: "Knowted",
