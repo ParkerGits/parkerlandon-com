@@ -61,7 +61,7 @@ export enum PortfolioItemTag {
   FRONTEND = "frontend",
   CLI = "cli",
   INTERPRETER = "interpreter",
-  PACKAGE = "package",
+  LIBRARY = "library",
 }
 
 export type PortfolioItem = {
@@ -132,7 +132,7 @@ export const projects: PortfolioItem[] = [
         url: "https://github.com/ParkerGits/gograph",
       },
     ],
-    tags: [PortfolioItemTag.GO, PortfolioItemTag.PACKAGE],
+    tags: [PortfolioItemTag.GO, PortfolioItemTag.LIBRARY],
     loomUrl:
       "https://www.loom.com/share/12b8fe2c15ae41f595403bc71377f1db?sid=e499592a-b609-43a3-b14b-57cb6a1f36fc",
   },
@@ -149,18 +149,21 @@ export const projects: PortfolioItem[] = [
         url: "https://github.com/ParkerGits/gods",
       },
     ],
-    tags: [PortfolioItemTag.GO, PortfolioItemTag.PACKAGE],
+    tags: [PortfolioItemTag.GO, PortfolioItemTag.LIBRARY],
     loomUrl:
       "https://www.loom.com/share/4eae3ccfc3334c16bbf32ac55ae27c88?sid=c39585db-86fc-46e8-9804-a775259fe25b",
   },
   {
     title: "Scheme/Prolog Transpiler",
-    shortDescription: "",
+    shortDescription:
+      "For my Programming Language Concepts class, I built a transpiler that turns programs from a made-up language into either Scheme or Prolog programs.",
     longDescription: "",
     emoji: "⚙️",
     //images: [PokecommitEncounter, PokecommitFight],
     links: [],
     tags: [PortfolioItemTag.RUST, PortfolioItemTag.INTERPRETER],
+    loomUrl:
+      "https://www.loom.com/share/7aefa8f8d6a0479e8afef44a99a1d5ce?sid=9c7e5cee-c25c-48e9-ad67-b8dfcba72d77",
   },
   {
     title: "Pokecommit CLI",
@@ -219,7 +222,7 @@ export const projects: PortfolioItem[] = [
   {
     title: "tends",
     shortDescription:
-      "My first full-stack application, \"tends,\" helps users manage their tendencies. This application was built as part of an egghead.io 'Portfolio Project Club' for building SaaS applications.",
+      'My first full-stack application, "tends," helps users manage their tendencies. This application was built as part of an egghead.io "Portfolio Project Club" for building SaaS applications.',
     longDescription:
       'My application "tends" helps users manage "quantities" in their lives (e.g., daily calories, screen time, exercise time, etc.). I created tends during an iteration of egghead.ios Portfolio Project Club, the goal of which was for each member to design, develop, and document a SaaS application that would serve as an impressive, business-oriented addition to their developer portfolio. Built using Next.js, React, TypeScript, Firebase, and Stripe, the project was my first stab at developing a full-stack application. Users could log into the service via GitHub or Google and create the quantities they wanted to track. The user could then make entries for each quantity and later view summaries of those entries as a graph over time (plotted with React Charts). After finishing the project, I wrote and published a technical case study about my process, which is now available on egghead.io.',
     emoji: "📈",
@@ -246,7 +249,7 @@ export const projects: PortfolioItem[] = [
   {
     title: "State Management Project Club",
     shortDescription:
-      "I led Portfolio Project Club in the egghead.io community in which each member to built a project that demonstrates a mastery of State Management in React.",
+      'I led a "Portfolio Project Club" in the egghead.io community in which each member built a project that demonstrates a mastery of State Management in React.',
     longDescription:
       "Over six weeks, from July to August 2021, I led a Portfolio Project Club in the egghead.io community. The objective of the project club was for each member to design, implement, and document a portfolio project that demonstrates a mastery of State Management in React. The project I developed was an RPG Cutscene in which the animations, events, and dialogue are all controlled by state machines managed by the XState library.",
     emoji: "🌵",
@@ -276,6 +279,8 @@ export const projects: PortfolioItem[] = [
   },
   {
     title: "Huffman Coding Tree",
+    shortDescription:
+      "Implementation of Huffman Coding for encoding, compressing, and decoding messages.",
     longDescription:
       "Serving as my final lab submission for the Data Structures 2 course at Seattle Pacific University, my C++ Huffman Coding Tree can encode, compress, and decode messages. The encoding process works by building a Huffman tree from a frequency table and using that tree to construct an encoding table. I use bitwise operations to convert binary strings to ASCII characters before outputting the encoded message and a string representation of the tree to a file. To decode the message, the embedded Huffman Tree is parsed and reconstructed from the encoded message. While I cannot share my code for this lab (it is still an assessment tool), I have provided pictures and my final grade report. This project represents the culmination of my C++ coursework and demonstrates my understanding of data structures and object-oriented programming.",
     emoji: "🌲",
@@ -290,6 +295,8 @@ export const projects: PortfolioItem[] = [
   },
   {
     title: "Minecraft Furnace State Machine",
+    shortDescription:
+      "An interative furnace in the browser built with XState to demonstrate React state management with state machines.",
     longDescription:
       "To demonstrate my knowledge of state machines and state management in React, I created a functional Minecraft furnace in the browser. The animation and furnace functionality is all powered by XState state machines.",
     emoji: "🏭",

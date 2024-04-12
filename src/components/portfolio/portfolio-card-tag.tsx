@@ -136,9 +136,9 @@ function getTagProps(tag: PortfolioItemTag): {
         children: "Interpreter",
         className: "bg-yellow-500 hover:bg-yellow-700",
       };
-    case PortfolioItemTag.PACKAGE:
+    case PortfolioItemTag.LIBRARY:
       return {
-        children: "Package",
+        children: "Library",
         className: "bg-orange-300 hover:bg-orange-500",
       };
   }
