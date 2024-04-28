@@ -8,6 +8,7 @@ import {
   TypographyH1,
   TypographyH2,
   TypographyH3,
+  TypographyH4,
   TypographyOL,
   TypographyUL,
 } from "./components/typography";
@@ -23,6 +24,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     h1: ({ children }) => <TypographyH1>{children}</TypographyH1>,
     h2: ({ children }) => <TypographyH2>{children}</TypographyH2>,
     h3: ({ children }) => <TypographyH3>{children}</TypographyH3>,
+    h4: ({ children }) => <TypographyH4>{children}</TypographyH4>,
     p: ({ children }) => <BodyText>{children}</BodyText>,
     img: (props) => (
       <Image

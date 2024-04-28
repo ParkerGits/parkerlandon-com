@@ -61,7 +61,7 @@ export enum PortfolioItemTag {
   FRONTEND = "frontend",
   CLI = "cli",
   INTERPRETER = "interpreter",
-  PACKAGE = "package",
+  LIBRARY = "library",
 }
 
 export type PortfolioItem = {
@@ -72,6 +72,8 @@ export type PortfolioItem = {
   //images?: StaticImageData[]
   links: { text: string; url: string }[];
   tags: PortfolioItemTag[];
+  loomUrl?: string;
+  youtubeEmbedUrl?: string;
 };
 
 export const projects: PortfolioItem[] = [
@@ -96,12 +98,15 @@ export const projects: PortfolioItem[] = [
       PortfolioItemTag.REST_API,
       PortfolioItemTag.AGILE,
     ],
+    youtubeEmbedUrl:
+      "https://www.youtube.com/embed/qc4yJOIwsgM?si=_E2qCtjzgcZ9LNpa",
   },
   {
     title: "hson",
     shortDescription:
       "hson is a scripting language for processing and formatting JSON data. The hson program is a CLI written in Haskell that performs parsing and interpreting.",
-    longDescription: "",
+    longDescription:
+      "The hson program is a command-line interface implemented in Haskell for processing JSON data. Given JSON data and a script written in the hson language, the hson CLI processes the JSON and outputs a result according to the hson script. Emphasizing readability and familiarity, I designed the syntax of hson to be similar to that of JavaScript. I built hson as part of my honors senior capstone project at Seattle Pacific University. The project aimed to illustrate how Haskell can be a practical tool for building correct, maintainable software. Alongside the hson program, I also delivered an academic case study illustrating how I leveraged parser combinators, monad transformers, and QuickCheck to implement the hson parser, interpreter, and property-based testing, respectively.",
     emoji: "🪄",
     //images: [HngrList, HngrSearch],
     links: [
@@ -112,26 +117,29 @@ export const projects: PortfolioItem[] = [
       PortfolioItemTag.CLI,
       PortfolioItemTag.INTERPRETER,
     ],
+    loomUrl:
+      "https://www.loom.com/share/dd00a9609e0f4f28a604842a2cbd039d?sid=7dd27b52-186f-41e6-9c45-e57619920cdc",
   },
   {
     title: "gograph",
     shortDescription:
-      "The gograph package implements graph algorithms and data types in Go. Employs data structures from the gods library to implement common graph algorithms like Shortest Path and Minimum Spanning Tree efficiently.",
+      "The gograph package implements graph algorithms and data types in Go, utilizing data structures from the gods library to implement common graph algorithms like Shortest Path and Minimum Spanning Tree efficiently.",
     longDescription: "",
     emoji: "🔗",
-    //images: [PokecommitEncounter, PokecommitFight],
     links: [
       {
         text: "GitHub repository",
         url: "https://github.com/ParkerGits/gograph",
       },
     ],
-    tags: [PortfolioItemTag.GO, PortfolioItemTag.PACKAGE],
+    tags: [PortfolioItemTag.GO, PortfolioItemTag.LIBRARY],
+    loomUrl:
+      "https://www.loom.com/share/12b8fe2c15ae41f595403bc71377f1db?sid=e499592a-b609-43a3-b14b-57cb6a1f36fc",
   },
   {
     title: "gods",
     shortDescription:
-      "gods is a package of efficient data structures written in Go. The implemented data structures are stack, queue, set, union-find, and binary heap.",
+      "gods is a Go package of efficient data structures. It includes a generic stack, queue, set, union-find, and binary heap.",
     longDescription: "",
     emoji: "🧱",
     //images: [PokecommitEncounter, PokecommitFight],
@@ -141,23 +149,28 @@ export const projects: PortfolioItem[] = [
         url: "https://github.com/ParkerGits/gods",
       },
     ],
-    tags: [PortfolioItemTag.GO, PortfolioItemTag.PACKAGE],
+    tags: [PortfolioItemTag.GO, PortfolioItemTag.LIBRARY],
+    loomUrl:
+      "https://www.loom.com/share/4eae3ccfc3334c16bbf32ac55ae27c88?sid=c39585db-86fc-46e8-9804-a775259fe25b",
   },
   {
     title: "Scheme/Prolog Transpiler",
-    shortDescription: "",
+    shortDescription:
+      "For my Programming Language Concepts class, I built a transpiler that turns programs from a made-up language into either Scheme or Prolog programs.",
     longDescription: "",
     emoji: "⚙️",
     //images: [PokecommitEncounter, PokecommitFight],
     links: [],
     tags: [PortfolioItemTag.RUST, PortfolioItemTag.INTERPRETER],
+    loomUrl:
+      "https://www.loom.com/share/7aefa8f8d6a0479e8afef44a99a1d5ce?sid=9c7e5cee-c25c-48e9-ad67-b8dfcba72d77",
   },
   {
     title: "Pokecommit CLI",
     shortDescription:
       "Pokecommit is a wrapper for git commit that employs PokeAPI and MySQL to allow users to catch a Pokemon with each commit.",
     longDescription:
-      "Inspired by my love for Pokemon and a desire to learn the Go programming language, I created this simple CLI wrapper for git commit that allows users to catch a Pokemon with each commit! Pokecommit integrates with PokeAPI to fetch Pokemon data, and uses a local MySQL database to store your team.",
+      "Inspired by my love for Pokemon and a desire to learn the Go programming language, I created this simple CLI wrapper for git commit that allows users to catch a Pokemon with each commit! Pokecommit integrates with PokeAPI to fetch Pokemon data, and uses a local MySQL database to store your box of Pokemon.",
     emoji: "🦑",
     //images: [PokecommitEncounter, PokecommitFight],
     links: [
@@ -176,6 +189,8 @@ export const projects: PortfolioItem[] = [
       PortfolioItemTag.REST_API,
       PortfolioItemTag.CLI,
     ],
+    loomUrl:
+      "https://www.loom.com/share/ffde78e5269d4297a5cb260e9f858a21?sid=b2b555ad-6885-409e-8f3e-a57ddf325778",
   },
   {
     title: "Knowted",
@@ -207,7 +222,7 @@ export const projects: PortfolioItem[] = [
   {
     title: "tends",
     shortDescription:
-      "My first full-stack application, \"tends,\" helps users manage their tendencies. This application was built as part of an egghead.io 'Portfolio Project Club' for building SaaS applications.",
+      'My first full-stack application, "tends," helps users manage their tendencies. This application was built as part of an egghead.io "Portfolio Project Club" for building SaaS applications.',
     longDescription:
       'My application "tends" helps users manage "quantities" in their lives (e.g., daily calories, screen time, exercise time, etc.). I created tends during an iteration of egghead.ios Portfolio Project Club, the goal of which was for each member to design, develop, and document a SaaS application that would serve as an impressive, business-oriented addition to their developer portfolio. Built using Next.js, React, TypeScript, Firebase, and Stripe, the project was my first stab at developing a full-stack application. Users could log into the service via GitHub or Google and create the quantities they wanted to track. The user could then make entries for each quantity and later view summaries of those entries as a graph over time (plotted with React Charts). After finishing the project, I wrote and published a technical case study about my process, which is now available on egghead.io.',
     emoji: "📈",
@@ -234,7 +249,7 @@ export const projects: PortfolioItem[] = [
   {
     title: "State Management Project Club",
     shortDescription:
-      "I led Portfolio Project Club in the egghead.io community in which each member to built a project that demonstrates a mastery of State Management in React.",
+      'I led a "Portfolio Project Club" in the egghead.io community in which each member built a project that demonstrates a mastery of State Management in React.',
     longDescription:
       "Over six weeks, from July to August 2021, I led a Portfolio Project Club in the egghead.io community. The objective of the project club was for each member to design, implement, and document a portfolio project that demonstrates a mastery of State Management in React. The project I developed was an RPG Cutscene in which the animations, events, and dialogue are all controlled by state machines managed by the XState library.",
     emoji: "🌵",
@@ -264,6 +279,8 @@ export const projects: PortfolioItem[] = [
   },
   {
     title: "Huffman Coding Tree",
+    shortDescription:
+      "Implementation of Huffman Coding for encoding, compressing, and decoding messages.",
     longDescription:
       "Serving as my final lab submission for the Data Structures 2 course at Seattle Pacific University, my C++ Huffman Coding Tree can encode, compress, and decode messages. The encoding process works by building a Huffman tree from a frequency table and using that tree to construct an encoding table. I use bitwise operations to convert binary strings to ASCII characters before outputting the encoded message and a string representation of the tree to a file. To decode the message, the embedded Huffman Tree is parsed and reconstructed from the encoded message. While I cannot share my code for this lab (it is still an assessment tool), I have provided pictures and my final grade report. This project represents the culmination of my C++ coursework and demonstrates my understanding of data structures and object-oriented programming.",
     emoji: "🌲",
@@ -278,6 +295,8 @@ export const projects: PortfolioItem[] = [
   },
   {
     title: "Minecraft Furnace State Machine",
+    shortDescription:
+      "An interative furnace in the browser built with XState to demonstrate React state management with state machines.",
     longDescription:
       "To demonstrate my knowledge of state machines and state management in React, I created a functional Minecraft furnace in the browser. The animation and furnace functionality is all powered by XState state machines.",
     emoji: "🏭",

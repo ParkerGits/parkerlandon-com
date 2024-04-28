@@ -43,7 +43,7 @@ What about functions with two or more parameters? We could define a trivial func
 ```hs
 add :: (Int, Int) -> Int
 add (x, y) = x + y
-````
+```
 
 Then, to apply `add` as declared to the values `1` and `2`, we would write `add (1,2)`.
 
@@ -72,7 +72,7 @@ So far, we've defined functions using equations (e.g., `add x y = x + y`). Alter
 ```hs
 add2 :: Int -> Int -> Int
 add2 = \x y -> x + y
-````
+```
 
 ### Typeclasses
 
@@ -311,7 +311,7 @@ safeSqrt x = if x < 0 then Nothing else Just (sqrt x)
 
 safeSqrt 16 -- Just 4.0
 safeSqrt (-4) -- Nothing
-````
+```
 
 Given that `Maybe` is an instance of `Monad`, we can chain `safeSqrt` operations with the `>>=` operator. This way, the square root operation will be repeatedly applied to valid inputs, and `Nothing` results will be propagated for invalid inputs.
 
@@ -364,12 +364,114 @@ promptRPS = do
   getLine
 ```
 
+### More Useful Monads: Except and Reader
+
+So far, I've introduced several parameterized types, including list (`[]`), `Maybe`, `Either`, and `IO`. All of these types are instances of `Monad` and find use in almost every Haskell program. Some less common, more specialized `Monad` types include `Reader` and `Except`.
+
+The `Reader` monad encapsulates computations that access values held in some fixed, read-only enclosing environment.[^7] [^8] [^9] The `Reader` type constructor is parameterized over two types, `r` and `a`. The first type parameter `r` represents the type of values stored in the environment, and the second parameter `a` represents the type of the `Reader` computation's result. For example, a computation of type `Reader String Int` can access a `String` environment value and will produce an `Int` result. We can construct such a `Reader` using the `reader :: (r -> a) -> Reader r a` function, which produces a `Reader r a` from a function `r -> a`. In this contrived example, the function `length :: String -> Int` can be used with `reader` to produce a `Reader String Int` value.
+
+```hs
+stringReader :: Reader String Int
+stringReader = reader length
+```
+
+Now we can run the `Reader String Int` computation with the `runReader` function, which takes a `Reader` and an initial `String` value for the environment. In this case, the result of the running the computation is the result of applying `length` to the provided `String` environment.
+
+```hs
+runReader stringReader "Hello World"
+-- 11
+```
+
+Typically, the environment will be accessed by a `Reader` computation via the `ask` function.[^9] For example, if a `String` environment represents the user's name, then the following `Reader String String` computation prints a welcome message to the user when run.
+
+```hs
+welcomeMessage :: Reader String String
+welcomeMessage = do
+  name <- ask
+  return ("Welcome back, " <> name <> ".")
+
+runReader welcomeMessage "Parker"
+-- "Welcome back, Parker."
+```
+
+The name `Reader` for these computations comes from the fact that associated environment data is read-only. Although `Reader` computations cannot change their own environments, they can call nested `Reader` computations with modified environments.[^9] The function `local :: (r -> r) -> Reader r a -> Reader r a` takes as argument a function that maps the `Reader` environment, then performs a `Reader` computation with the new environment. For example, we define a new function `welcomeFirstInitial` that modifies the `String` environment to only contain the first letter.
+
+```hs
+welcomeFirstInitial :: Reader String String
+welcomeFirstInitial = local firstLetter welcomeMessage
+ where
+  firstLetter = singleton . head
+
+runReader welcomeFirstInitial "Parker"
+-- "Welcome back, P."
+```
+
+In [hson](/posts/introducing-hson), the `Reader` monad is used in the interpreter to access the program envionment, which is a map that associates variable identifiers with the values they are bound to. The hson interpreter also utilizes the `Except` monad, which adds error handling to its computations. The type `Except e a` represents a computation that either produces a successful result of type `a` or produces an error result of type `e`.[^9] Within an `Except` computation, we can call `throwError :: e -> Except e a` to signal an error. In the following code snippet, we create a new `safeSqrt2` function that produces a result of type `Except String Float`.
+
+```hs
+-- Original `safeSqrt` with Maybe result
+safeSqrt :: Float -> Maybe Float
+safeSqrt x = if x < 0 then Nothing else Just (sqrt x)
+
+-- New `safeSqrt` with Except String result
+safeSqrt2 :: Float -> Except String Float
+safeSqrt2 x = if x < 0 then throwError "Received negative input!" else return (sqrt x)
+```
+
+The benefit of using an `Except String` result over a `Maybe` result is that we can use `throwError` within `Except` to provide contextual information about a failure. Now, when we run the `Except String Float` computation with `runExcept`, we receive an `Either String Float` result that represents a successful computation in `Right Float` or an error message in `Left String`.
+
+```hs
+runSafeSqrt2 x = runExcept (safeSqrt2 x)
+
+runSafeSqrt2 4 -- Right 2.0
+runSafeSqrt2 16 -- Right 4.0
+runSafeSqrt2 (-1) -- Left "Received negative input!"
+```
+
+### Monad Transformers and Composing Monads
+
+While the features of the `Reader` and `Except` monads are useful alone, they become remarkably powerful when joined in _composition_. The _monad transformer_ framework allows us to compose monads and combine their features into a single custom monad.[^8] [^9] By inspecting the definitions of `Reader` and `Except`, we find that they are aliases for specific instances of the `ReaderT` and `ExceptT` monad _transformers_ that compose the `Identity` monad.
+
+```hs
+type Reader r a = ReaderT r Identity a
+type Except e a = ExceptT e Identity a
+```
+
+The `Identity` monad is trivial: it provides no features and represents "no effect".[^8] [^9] So, the `Reader` and `Except` monads are special cases of the `ReaderT` and `ExceptT` monad transformers, where the nested monad in composition is `Identity`.
+
+We can compose `ReaderT` and `ExceptT` to produce a new custom monad, `Eval`, that provides _both_ access to a read-only environment and error handling.
+
+```hs
+type Eval a = ReaderT String (ExceptT String Identity) a
+```
+
+The outermost `ReaderT` monad has `ExceptT` as its base, and the `ExceptT` monad has `Identity` as its base. Now, when we run an `Eval` computation, we use `runReaderT`, `runExceptT`, and `runIdentity` to unwrap all the monad transformers and obtain our final `Either String a` result.
+
+```hs
+runEval :: Eval a -> Either String a
+runEval x = runIdentity $ runExceptT $ runReaderT x "Initial Environment"
+```
+
+Monad transformers also allow us to integrate effectful computations by changing the innermost `Identity` monad to `IO`. Now, when we apply `runReaderT` and `runExceptT`, we obtain an `IO (Either String a)` result.
+
+```hs
+type Eval a = ReaderT String (ExceptT String IO) a
+
+runEval :: Eval a -> IO (Either String a)
+runEval x = runExceptT $ runReaderT x "Initial Environment"
+```
+
+The [hson](/posts/introducing-hson) interpreter utilizes the `ReaderT`, `ExceptT`, and `IO` monad transformers in this way to integrate read-only environment access, error handling, and I/O effects.
+
 [^1]: See [How Functional Programming Mattered](https://academic.oup.com/nsr/article/2/3/349/1427872)
 [^2]: See [A History of Haskell](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/history.pdf)
 [^3]: See [Type Classes in Haskell](https://dl.acm.org/doi/10.1145/227699.227700)
 [^4]: See _Programming in Haskell: Second Edition_ by Graham Hutton
 [^5]: See [A Gentle Introduction to Haskell](https://cpsc.yale.edu/sites/default/files/files/tr901.pdf)
 [^6]: See [Constructing Applicative Functors](https://openaccess.city.ac.uk/id/eprint/1141/1/)
+[^7]: See [Composing Monads](https://web.cecs.pdx.edu/~mpj/pubs/RR-1004.pdf)
+[^8]: See [Functional Programming with Overloading and Higher-Order Polymorphism](https://web.cecs.pdx.edu/~mpj/pubs/springschool95.pdf)
+[^9]: See [Monad Transformers Step by Step](https://blogs.asarkar.com/assets/docs/haskell/Monad%20Transformers%20Step%20by%20Step%20-%20Grabmuller.pdf)
 
 import withLayout from '../../lib/withLayout'
 export default withLayout(frontmatter)
