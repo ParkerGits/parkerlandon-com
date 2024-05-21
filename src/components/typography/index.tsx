@@ -35,9 +35,14 @@ export function TypographyH3({ children, className }: TypographyProps) {
   );
 }
 
-export function TypographyH4({ children }: TypographyProps) {
+export function TypographyH4({ children, className }: TypographyProps) {
   return (
-    <h4 className="scroll-m-20 text-xl font-medium font-heading tracking-tight mt-8">
+    <h4
+      className={cn(
+        "scroll-m-20 text-xl font-medium font-heading tracking-tight mt-8",
+        className,
+      )}
+    >
       {children}
     </h4>
   );

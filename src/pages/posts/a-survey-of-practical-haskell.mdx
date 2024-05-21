@@ -45,7 +45,7 @@ add :: (Int, Int) -> Int
 add (x, y) = x + y
 ```
 
-Then, to apply `add` as declared to the values `1` and `2`, we would write `add (1,2)`.
+The above definition of `add` maps `(Int, Int)` tuples to `Int` results. Applying `add` to the values `1` and `2` entails providing `add` with the tuple `(1, 2)`.
 
 Now, consider the following new definition of `add`:
 
@@ -65,7 +65,7 @@ increment = add 1
 increment 2 -- this is the same as (add 1) 2!
 ```
 
-Currying lets us easily build specific operations from general ones, making our functions more extensible and robust. Thus, currying is the default for function definitions in Haskell.
+Currying enables the simple construction of specific operations from general ones, making functions more extensible and robust. Thus, currying is the default style for function definitions in Haskell.
 
 So far, we've defined functions using equations (e.g., `add x y = x + y`). Alternatively, we can define functions with lambda expressions, which have arguments and a body like any other function but do not have a name. For example, we can define a new function `add2` to be the lambda expression `\x y -> x + y`. Just like `add`, `add2` takes two arguments, `x` and `y`, and returns their sum.
 
@@ -74,18 +74,18 @@ add2 :: Int -> Int -> Int
 add2 = \x y -> x + y
 ```
 
+Like the original definition of `add`, this new definition takes two arguments, `x` and `y`, and returns their sum. Lambda expressions are commonly used to define arguments for higher-order functions.
+
 ### Typeclasses
 
-Can we make our `add` function more flexible? Currently it only works for adding integers, but it would be convenient if `add` supported all kinds of numbers.
-
-A first pass at implementing a more reusable `add` function would be to use polymorphic types in the type declaration to support all types.
+The current definition of `add` can only be applied to _integer_ arguments. It would be more convenient if `add` supported other kinds of numeric values, like decimals. One attempt at a more reusable `add` function might utilize polymorphic types in its definition to support all parameter types.
 
 ```hs
 add :: a -> a -> a
 add x y = x + y
 ```
 
-However, this code won't compile because the `+` operator is not defined for all types: the Haskell compiler wouldn't know how to perform `add True False`, for example. Thus, `add` should only support the _class_ of types for which `+` is defined. Indeed, Haskell provides _type classes_ that enable us to overload operations for different types and categorize types according to the operations they support.
+However, this code won't compile because the `+` operator is not defined for all types: the Haskell compiler wouldn't know how to perform `add True False`, for example. Thus, `add` should only support the _class_ of types for which `+` is defined. Indeed, Haskell's _type class_ feature enables overloading operations for different types and categorizing types according to the operations they support.
 
 A `class` declaration describes a new typeclass according to its operations and their type signatures. A simple typeclass is the built-in `Eq` typeclass, which says that a type `a` is an instance of `Eq` if it defines the equality operator `==` with type `a -> a -> Bool`.[^3]
 

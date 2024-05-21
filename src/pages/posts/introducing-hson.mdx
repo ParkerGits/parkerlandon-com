@@ -54,9 +54,9 @@ $ hson --hf script.hson --jf restaurants.json
 [Parker's Pasta, Barely Barbecue]
 ```
 
-Emphasizing readability and familiarity, I designed the hson syntax to be similar to that of JavaScript. Operations like `filter` and `map` can be chained like methods, and properties of objects are accessed with `.`. The construct `|restaurant| => restaurant.name` is an anonymous function that takes a restaurant argument and returns its `name`. Functions in hson are first class, so they can be passed as arguments to other higher-order functions like `filter` and `map`.
+Emphasizing readability and familiarity, I designed the hson syntax to be similar to that of JavaScript. Operations like `filter` and `map` can be chained like methods, and properties of objects are accessed with the dot symbol (`.`). The construct `|restaurant| => restaurant.name` is an anonymous function that takes a `restaurant` object as its argument and returns the object's `name` property. Functions in hson are first class, so they can be passed as arguments to other higher-order functions like `filter` and `map`.
 
-We can rewrite our script with the `toJSON` function, formatting the results as JSON. We'll also employ the pipe operator `|>` instead of chaining methods, and we'll `map` each restaurant to an object with a single `name` property.
+The above hson script can be modified to format its results as a JSON string with the `toJSON` function. The pipe operator `|>` can also be employed instead of the dot symbol to compose functions, and each `restaurant` object can be mapped to a new object with a single `name` property.
 
 ```js
 $ |> filter(|restaurant| => restaurant.city == "Seattle")
@@ -64,7 +64,7 @@ $ |> filter(|restaurant| => restaurant.city == "Seattle")
   |> toJSON(2)
 ```
 
-The pipe operator passes its left-hand side as the first argument to the function call on its right-hand side. The argument of `2` in `toJSON()` specifies an indentation of `2` in the output string. Given the JSON data, the script above produces the following output.
+The pipe operator passes its left-hand side as the first argument to the function call on its right-hand side. The argument of `2` in `toJSON()` specifies an indentation of 2 in the output string. Reunning hson with the newly modified script produces the following output.
 
 ```txt
 $ hson --hf script.hson --jf restaurants.json
@@ -78,7 +78,7 @@ $ hson --hf script.hson --jf restaurants.json
 ]
 ```
 
-We can also declare variables with the `let` keyword. For example, we can define a function `filterSeattleRestaurants` that applies the `filter` and `map` operations from above.
+Variables in hson are declared with the let keyword. For example, in the following script, a function `filterSeattleRestaurants` is declared that applies the `filter` and `map` operations from above. Applying that function to the parsed JSON data (bound to `$)` produces the same output as before.
 
 ```js
 let filterSeattleRestaurants = |restaurants| =>
@@ -88,9 +88,7 @@ let filterSeattleRestaurants = |restaurants| =>
 filterSeattleRestaurants($)
 ```
 
-Applying that function to `$` gives us the same output as before.
-
-We can also index arrays with the standard square bracket notation. The following snippet gets the restaurant at index `1` in the input JSON and prints out its `name`.
+The hson language supports all JSON data types—arrays, objects, strings, numbers, booleans, and `null`—as well as functions. The semantics of these data types and the syntax of operations on their values are nearly identical to those of JavaScript. For example, arrays are indexed with the standard square bracket notation and, as previously demonstrated, object properties are accessed with the dot symbol. The following snippet accesses the `restaurant` object at index `1` in the input JSON and prints out its `name` property.
 
 ```js
 let restaurant = $[1];
@@ -102,7 +100,7 @@ $ hson --hf script.hson --jf restaurants.json
 Smashing Sushi
 ```
 
-Like JavaScript, hson also provides array and object _destructuring_ for accessing array indices and object properties. The following script produces the same result ("Smashing Sushi") but utilizes destructuring.
+Like JavaScript, hson also provides array and object _destructuring_ for accessing array indices and object properties. The following script produces the same result as above ("Smashing Sushi") but instead utilizes destructuring for index and property access.
 
 ```js
 let [_, restaurant] = $;
@@ -110,7 +108,7 @@ let { name } = restaurant;
 name
 ```
 
-As a more sophisticated example, consider the following JSON representation of a Turing Machine, where the `start`, `accept`, and `reject` fields name the start, stop, and reject states respectively, and the `delta` field contains information about each state transition.
+As a more sophisticated example, consider the following JSON representation of a Turing Machine, where the `start`, `accept`, and `reject` fields define the start, stop, and reject states respectively, and the `delta` field contains information about each state transition.
 
 ```json
 {
@@ -155,9 +153,9 @@ $.delta.reduce(|accumulator, transitions| =>
   , 0)
 ```
 
-The `reduce` function is inspired by Haskell's `foldr` operation and is nearly identical to the `reduce` array method from JavaScript. Its responsibility in the script above is to keep track of the transition count. The `some` function also has a near-identical analog in JavaScript: it returns true if any element in the provided array satisfies its predicate function. In the script above, it returns true if the result of any transition from a given state is the reject state. Finally, the ternary operator `?` conditionally adds one to the accumulator if the transition result is the reject state.
+The `reduce` function is inspired by Haskell's `foldr` operation and is nearly identical to the `reduce` array method from JavaScript. Its responsibility in the script above is to keep track of the transition count. The `some` function also has a near-identical analog in JavaScript: it returns true if any element in the provided array satisfies its predicate function. In the script above, `some` returns true if any transition from a given state is the reject state. Finally, the ternary operator `?` conditionally returns the `accumulator` value incremented by one if the transition result is the reject state.
 
-We can abstract the logic of conditionally tallying list elements to a higher-order function `countWhere`, which will again utilize `reduce` and the ternary operator to count the elements that satisfy a given predicate function.
+The logic of conditionally tallying list elements can be abstracted to a higher-order function `countWhere`, which will again utilize the `reduce` operation and the ternary operator to count the elements that satisfy a given predicate function.
 
 ```js
 let countWhere = |list, predicate| =>
@@ -166,7 +164,7 @@ let countWhere = |list, predicate| =>
   , 0);
 ```
 
-We now rewrite our original reject-transition counting script to employ `countWhere`, with the provided predicate being the `some` function from before.
+The original counting script can now be rewritten to employ `countWhere`, with the provided predicate being the `some` function from before.
 
 ```js
 $.delta |>
@@ -177,7 +175,7 @@ $.delta |>
   )
 ```
 
-In general, an hson script is a sequence of zero or more variable declarations followed by a single expression. The output of a script is the result of the evaluated final expression. Variables in hson are immutable: once they are defined, they cannot be redefined, and their values cannot be changed. Values in hson are computed solely from compositions of functions, so hson is itself a functional language.
+At a high level, an hson script is a sequence of zero or more variable declarations followed by a single expression. The output of a script is the result of the evaluated final expression. Variables in hson are immutable: they cannot be reassigned after their declaration, and their values cannot change. Values in hson are computed solely from compositions of functions, so hson is itself a functional language.
 
 The hson program is responsible for
 
