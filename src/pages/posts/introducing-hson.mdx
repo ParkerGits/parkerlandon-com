@@ -7,6 +7,8 @@ ogImageUrl: https://adoring-jackson-1187ff.netlify.app/.netlify/functions/gen-op
 postnum: 6
 ---
 
+> **Note:** I produced this article as part of a series of Haskell pieces I wrote while developing my senior thesis. That thesis is available now and contains a more polished version of this article. See [A Survey of Practical Haskell: Parsing, Interpreting, and Testing](https://digitalcommons.spu.edu/cgi/viewcontent.cgi?article=1224&context=honorsprojects&z=1717695924).
+
 To demonstrate the many practical utilities afforded by Haskell and strongly-typed pure functional programming, I've used Haskell to implement a scripting language and CLI called _hson_. The hson language is a domain-specific language for processing JSON data. Its parser and interpreter are included in the hson CLI, which, given an hson script and input JSON, processes the JSON according the the hson script. For example, consider the following JSON data representing a list of restaurant data.
 
 ```json
