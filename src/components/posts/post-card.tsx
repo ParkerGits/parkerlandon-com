@@ -22,7 +22,7 @@ export default function PostCard({ post }: PostCardProps) {
     <Card className="flex flex-col justify-between">
       <CardHeader className="flex flex-row items-center gap-4 justify-center p-5">
         <div className="flex flex-col gap-2.5">
-          <CardTitle className="text-center">
+          <CardTitle>
             <Link href={href}>
               <AnchorText>{post.title}</AnchorText>
             </Link>

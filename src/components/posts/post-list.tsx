@@ -7,7 +7,7 @@ interface PostListProps {
 
 export default function PostList({ posts }: PostListProps) {
   return (
-    <div className="grid gap-6 xs:grid-cols-2 lg:grid-cols-3 max-w-6xl w-full mx-auto">
+    <div className="max-w-4xl space-y-8">
       {posts.map((post) => (
         <PostCard key={post.title} post={post} />
       ))}

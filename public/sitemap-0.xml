@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://parkerlandon.com</loc><lastmod>2024-01-16T18:14:14.212Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://parkerlandon.com/about</loc><lastmod>2024-01-16T18:14:14.213Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://parkerlandon.com/portfolio</loc><lastmod>2024-01-16T18:14:14.213Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://parkerlandon.com/posts</loc><lastmod>2024-01-16T18:14:14.213Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://parkerlandon.com/posts/a-practical-introduction-to-parsing-in-haskell</loc><lastmod>2024-01-16T18:14:14.213Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://parkerlandon.com/posts/parsing-chained-expressions-functionally</loc><lastmod>2024-01-16T18:14:14.213Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://parkerlandon.com</loc><lastmod>2025-04-20T18:29:17.915Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://parkerlandon.com/about</loc><lastmod>2025-04-20T18:29:17.915Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://parkerlandon.com/portfolio</loc><lastmod>2025-04-20T18:29:17.915Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://parkerlandon.com/posts</loc><lastmod>2025-04-20T18:29:17.915Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://parkerlandon.com/posts/a-practical-introduction-to-parsing-in-haskell</loc><lastmod>2025-04-20T18:29:17.915Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://parkerlandon.com/posts/a-survey-of-practical-haskell</loc><lastmod>2025-04-20T18:29:17.915Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://parkerlandon.com/posts/introducing-hson</loc><lastmod>2025-04-20T18:29:17.915Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://parkerlandon.com/posts/parsing-chained-expressions-functionally</loc><lastmod>2025-04-20T18:29:17.915Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://parkerlandon.com/posts/pure-functional-programming-in-context</loc><lastmod>2025-04-20T18:29:17.915Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://parkerlandon.com/posts/testing-parsers-thoroughly-with-property-based-testing</loc><lastmod>2025-04-20T18:29:17.915Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>

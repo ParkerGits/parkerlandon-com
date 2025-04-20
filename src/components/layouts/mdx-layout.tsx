@@ -47,7 +47,7 @@ export default function MdxLayout({ children, meta }: MdxLayoutProps) {
         }}
       />
       <PageLayout>
-        <main className="max-w-2xl">
+        <main className="max-w-3xl">
           {meta.title !== undefined && <TitleText>{meta.title}</TitleText>}
           <article>{children}</article>
         </main>
