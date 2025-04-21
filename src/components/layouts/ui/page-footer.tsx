@@ -3,11 +3,13 @@ import {
   LinkedInLogoIcon,
   TwitterLogoIcon,
 } from "@radix-ui/react-icons";
+import { FaYoutube } from "react-icons/fa";
 
 const ICON_LINKS = [
   { Icon: GitHubLogoIcon, href: "https://github.com/ParkerGits" },
   { Icon: TwitterLogoIcon, href: "https://twitter.com/LordPrkr" },
   { Icon: LinkedInLogoIcon, href: "https://www.linkedin.com/in/parkerlandon" },
+  { Icon: FaYoutube, href: "https://www.youtube.com/@prkrlndn" },
 ];
 
 export default function PageFooter() {
