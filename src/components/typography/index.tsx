@@ -50,7 +50,7 @@ export function TypographyH4({ children, className }: TypographyProps) {
 
 export function TypographyP({ children }: TypographyProps) {
   return (
-    <p className="leading-7 [&:not({children}: TypographyProps:first-child)]:mt-4">
+    <p className="leading-7 [&:not({children}: TypographyProps:first-child)]:mt-4 font-body">
       {children}
     </p>
   );
@@ -58,18 +58,24 @@ export function TypographyP({ children }: TypographyProps) {
 
 export function TypographyBlockquote({ children }: TypographyProps) {
   return (
-    <blockquote className="mt-6 border-l-2 pl-6 italic">{children}</blockquote>
+    <blockquote className="mt-6 border-l-2 pl-6 italic font-body">
+      {children}
+    </blockquote>
   );
 }
 
 export function TypographyUL({ children }: TypographyProps) {
-  return <ul className="my-6 ml-6 list-disc [&>li]:mt-2">{children}</ul>;
+  return (
+    <ul className="my-6 ml-6 list-disc [&>li]:mt-2 font-body">{children}</ul>
+  );
 }
 
 export function TypographyOL({ children }: TypographyProps) {
-  return <ul className="my-6 ml-6 list-decimal [&>li]:mt-2">{children}</ul>;
+  return (
+    <ul className="my-6 ml-6 list-decimal [&>li]:mt-2 font-body">{children}</ul>
+  );
 }
 
 export function TypographyLead({ children }: TypographyProps) {
-  return <p className="text-xl text-muted-foreground">{children}</p>;
+  return <p className="text-xl text-muted-foreground font-body">{children}</p>;
 }

@@ -4,6 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { fontVariables } from "@/lib/fonts";
 
 const Sheet = SheetPrimitive.Root;
 
@@ -59,7 +60,7 @@ const SheetContent = React.forwardRef<
     <SheetOverlay />
     <SheetPrimitive.Content
       ref={ref}
-      className={cn(sheetVariants({ side }), className)}
+      className={cn(...fontVariables, sheetVariants({ side }), className)}
       {...props}
     >
       {children}
