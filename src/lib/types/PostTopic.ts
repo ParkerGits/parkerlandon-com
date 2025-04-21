@@ -3,9 +3,10 @@ export enum PostTopic {
   FUNCTIONAL_PROGRAMMING = "functional programming",
   PARSERS = "parsers",
   INTERPRETERS = "interpreters",
-  QUICKCHECK = "quickcheck",
   TESTING = "testing",
-  HSON = "hson",
+  FULLSTACK = "fullstack",
+  TERRAFORM = "terraform",
+  INFRASTRUCTURE = "infrastructure",
   UNKNOWN = "unknown",
 }
 
@@ -14,9 +15,10 @@ const topics = {
   "functional programming": PostTopic.FUNCTIONAL_PROGRAMMING,
   parsers: PostTopic.PARSERS,
   interpreters: PostTopic.INTERPRETERS,
-  quickcheck: PostTopic.QUICKCHECK,
   testing: PostTopic.TESTING,
-  hson: PostTopic.HSON,
+  terraform: PostTopic.TERRAFORM,
+  infrastructure: PostTopic.INFRASTRUCTURE,
+  fullstack: PostTopic.FULLSTACK,
 } as const;
 
 type Topic = keyof typeof topics;

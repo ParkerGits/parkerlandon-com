@@ -1,6 +1,33 @@
 import { PortfolioItemTag } from "@/lib/portfolio";
 import { Badge } from "../ui/badge";
 import { ReactNode } from "react";
+import { BadgeChildren } from "../badge-children";
+import { HiMiniSquare3Stack3D } from "react-icons/hi2";
+import {
+  SiCplusplus,
+  SiDocker,
+  SiExpress,
+  SiFirebase,
+  SiGo,
+  SiHaskell,
+  SiMysql,
+  SiNextdotjs,
+  SiNodedotjs,
+  SiPostgresql,
+  SiReact,
+  SiRedux,
+  SiRust,
+  SiSqlite,
+  SiTerraform,
+  SiTypescript,
+  SiXstate,
+} from "react-icons/si";
+import { MdLibraryBooks } from "react-icons/md";
+import { FaDragon, FaJava, FaTerminal } from "react-icons/fa";
+import { AiFillApi } from "react-icons/ai";
+import { GrCycle } from "react-icons/gr";
+import { GiBearHead } from "react-icons/gi";
+import { CgWebsite } from "react-icons/cg";
 
 interface PortfolioCardTagProps {
   tag: PortfolioItemTag;
@@ -8,79 +35,139 @@ interface PortfolioCardTagProps {
 
 export default function PortfolioCardTag({ tag }: PortfolioCardTagProps) {
   const tagProps = getTagProps(tag);
-  return <Badge {...tagProps} />;
+  return <Badge {...tagProps} variant="secondary" />;
 }
 
 function getTagProps(tag: PortfolioItemTag): {
-  className: string;
+  className?: string;
   children: ReactNode;
-  icon?: ReactNode;
 } {
   switch (tag) {
-    case PortfolioItemTag.SASS:
-      return { children: "Sass", className: "bg-pink-500 hover:bg-pink-700" };
-    case PortfolioItemTag.TAILWINDCSS:
-      return {
-        children: "TailwindCSS",
-        className: "bg-teal-600 hover:bg-teal-800",
-      };
     case PortfolioItemTag.GO:
-      return { children: "Go", className: "bg-sky-400 hover:bg-sky-600" };
+      return {
+        children: (
+          <BadgeChildren
+            text="Go"
+            iconAfter={<SiGo size={16} className="text-sky-400" />}
+          />
+        ),
+      };
     case PortfolioItemTag.TYPESCRIPT:
       return {
-        children: "TypeScript",
-        className: "bg-blue-600 hover:bg-blue-800",
+        children: (
+          <BadgeChildren
+            text="TypeScript"
+            iconAfter={<SiTypescript size={16} className="text-blue-600" />}
+          />
+        ),
       };
     case PortfolioItemTag.CPP:
       return {
-        children: "C++",
-        className: "bg-yellow-600 hover:bg-yellow-800",
+        children: (
+          <BadgeChildren
+            text="C++"
+            iconAfter={<SiCplusplus size={16} className="text-blue-400" />}
+          />
+        ),
       };
     case PortfolioItemTag.RUST:
       return {
-        children: "Rust",
-        className: "bg-orange-500 hover:bg-orange-700",
+        children: (
+          <BadgeChildren
+            text="Rust"
+            iconAfter={<SiRust size={16} className="text-orange-600" />}
+          />
+        ),
       };
     case PortfolioItemTag.HASKELL:
       return {
-        children: "Haskell",
-        className: "bg-purple-400 hover:bg-purple-600",
+        children: (
+          <BadgeChildren
+            text="Haskell"
+            iconAfter={<SiHaskell size={16} className="text-purple-500" />}
+          />
+        ),
       };
     case PortfolioItemTag.JAVA:
-      return { children: "Java", className: "bg-red-400 hover:bg-red-600" };
+      return {
+        children: (
+          <BadgeChildren
+            text="Java"
+            iconAfter={<FaJava size={16} className="text-orange-900" />}
+          />
+        ),
+      };
     case PortfolioItemTag.REACT:
-      return { children: "React", className: "bg-blue-400 hover:bg-blue-600" };
+      return {
+        children: (
+          <BadgeChildren
+            text="React"
+            iconAfter={<SiReact size={16} className="text-sky-400" />}
+          />
+        ),
+      };
     case PortfolioItemTag.REACT_NATIVE:
       return {
-        children: "React Native",
-        className: "bg-blue-400 hover:bg-blue-600",
+        children: (
+          <BadgeChildren
+            text="React Native"
+            iconAfter={<SiReact size={16} className="text-sky-400" />}
+          />
+        ),
       };
     case PortfolioItemTag.NEXTJS:
       return {
-        children: "Next.js",
-        className: "bg-pink-600 hover:bg-pink-800",
+        children: (
+          <BadgeChildren
+            text="Next.js"
+            iconAfter={<SiNextdotjs size={16} className="text-black" />}
+          />
+        ),
       };
     case PortfolioItemTag.REDUX:
       return {
-        children: "Redux",
-        className: "bg-purple-600 hover:bg-purple-800",
+        children: (
+          <BadgeChildren
+            text="Redux"
+            iconAfter={<SiRedux size={16} className="text-purple-500" />}
+          />
+        ),
       };
     case PortfolioItemTag.XSTATE:
-      return { children: "XState", className: "bg-red-600 hover:bg-red-800" };
+      return {
+        children: (
+          <BadgeChildren
+            text="XState"
+            iconAfter={<SiXstate size={16} className="text-black" />}
+          />
+        ),
+      };
     case PortfolioItemTag.ZUSTAND:
       return {
-        children: "Zustand",
-        className: "bg-orange-800 hover:bg-orange-900",
+        children: (
+          <BadgeChildren
+            text="Zustand"
+            iconAfter={<GiBearHead size={16} className="text-orange-900" />}
+          />
+        ),
       };
     case PortfolioItemTag.NODEJS:
       return {
-        children: "Node.js",
-        className: "bg-green-600 hover:bg-green-800",
+        children: (
+          <BadgeChildren
+            text="Node.js"
+            iconAfter={<SiNodedotjs size={16} className="text-green-500" />}
+          />
+        ),
       };
     case PortfolioItemTag.EXPRESSJS:
       return {
-        children: "Express.js",
-        className: "bg-yellow-500 hover:bg-yellow-700",
+        children: (
+          <BadgeChildren
+            text="Express.js"
+            iconAfter={<SiExpress size={16} className="text-blue-500" />}
+          />
+        ),
       };
     case PortfolioItemTag.JAVA_SPRING:
       return {
@@ -89,57 +176,124 @@ function getTagProps(tag: PortfolioItemTag): {
       };
     case PortfolioItemTag.MYSQL:
       return {
-        children: "MySQL",
-        className: "bg-orange-400 hover:bg-orange-600",
+        children: (
+          <BadgeChildren
+            text="MySQL"
+            iconAfter={<SiMysql size={16} className="text-teal-600" />}
+          />
+        ),
       };
     case PortfolioItemTag.POSTGRESQL:
       return {
-        children: "PostgreSQL",
-        className: "bg-blue-800 hover:bg-blue-900",
+        children: (
+          <BadgeChildren
+            text="PostgreSQL"
+            iconAfter={<SiPostgresql size={16} className="text-blue-800" />}
+          />
+        ),
       };
     case PortfolioItemTag.FIREBASE:
       return {
-        children: "Firebase",
-        className: "bg-orange-600 hover:bg-orange-800",
+        children: (
+          <BadgeChildren
+            text="Firebase"
+            iconAfter={<SiFirebase size={16} className="text-orange-600" />}
+          />
+        ),
       };
     case PortfolioItemTag.SQLITE:
       return {
-        children: "SQLite",
-        className: "bg-lime-500 hover:bg-lime-700",
+        children: (
+          <BadgeChildren
+            text="SQLite"
+            iconAfter={<SiSqlite size={16} className="text-blue-400" />}
+          />
+        ),
       };
     case PortfolioItemTag.DOCKER:
-      return { children: "Docker", className: "bg-blue-700 hover:bg-blue-900" };
+      return {
+        children: (
+          <BadgeChildren
+            text="Docker"
+            iconAfter={<SiDocker size={16} className="text-blue-700" />}
+          />
+        ),
+      };
     case PortfolioItemTag.REST_API:
-      return { children: "REST API", className: "bg-red-400 hover:bg-red-600" };
+      return {
+        children: (
+          <BadgeChildren
+            text="REST API"
+            iconAfter={<AiFillApi size={16} className="text-orange-500" />}
+          />
+        ),
+      };
     case PortfolioItemTag.AGILE:
       return {
-        children: "Agile",
-        className: "bg-emerald-400 hover:bg-emerald-600",
+        children: (
+          <BadgeChildren
+            text="Agile"
+            iconAfter={<GrCycle size={16} className="text-emerald-500" />}
+          />
+        ),
       };
     case PortfolioItemTag.FULLSTACK:
       return {
-        children: "Fullstack",
-        className: "bg-purple-500 hover:bg-purple-700",
+        children: (
+          <BadgeChildren
+            text="Fullstack"
+            iconAfter={
+              <HiMiniSquare3Stack3D size={16} className="text-orange-500" />
+            }
+          />
+        ),
       };
     case PortfolioItemTag.FRONTEND:
       return {
-        children: "Frontend",
-        className: "bg-amber-500 hover:bg-amber-700",
+        children: (
+          <BadgeChildren
+            text="Frontend"
+            iconAfter={<CgWebsite size={16} className="text-orange-500" />}
+          />
+        ),
       };
     case PortfolioItemTag.CLI:
       return {
-        children: "CLI",
-        className: "bg-purple-600 hover:bg-purple-800",
+        children: (
+          <BadgeChildren
+            text="CLI"
+            iconAfter={<FaTerminal size={16} className="text-blue-500" />}
+          />
+        ),
       };
     case PortfolioItemTag.INTERPRETER:
       return {
-        children: "Interpreter",
-        className: "bg-yellow-500 hover:bg-yellow-700",
+        children: (
+          <BadgeChildren
+            text="Interpreters"
+            iconAfter={
+              <FaDragon size={16} className="text-red-500" strokeWidth={3} />
+            }
+          />
+        ),
       };
     case PortfolioItemTag.LIBRARY:
       return {
-        children: "Library",
-        className: "bg-orange-300 hover:bg-orange-500",
+        children: (
+          <BadgeChildren
+            text="Library"
+            iconAfter={<MdLibraryBooks size={16} className="text-orange-300" />}
+          />
+        ),
+      };
+    case PortfolioItemTag.TERRAFORM:
+      return {
+        children: (
+          <BadgeChildren
+            text="Terraform"
+            iconAfter={<SiTerraform size={16} className="text-purple-400" />}
+          />
+        ),
       };
   }
 }

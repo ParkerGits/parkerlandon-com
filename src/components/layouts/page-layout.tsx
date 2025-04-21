@@ -1,4 +1,4 @@
-import { fontBody, fontHeading, fontLogo, fontMono } from "@/lib/fonts";
+import { fontVariables } from "@/lib/fonts";
 import PageFooter from "./ui/page-footer";
 import PageHeader from "./ui/page-header";
 import { cn } from "@/lib/utils";
@@ -13,10 +13,7 @@ export default function PageLayout({ children }: PageLayoutProps) {
     <div
       className={cn(
         `flex min-h-screen flex-col items-center justify-between p-4`,
-        fontLogo.variable,
-        fontHeading.variable,
-        fontBody.variable,
-        fontMono.variable,
+        ...fontVariables,
       )}
     >
       <div className="flex flex-col items-center w-full">

@@ -7,8 +7,9 @@ import {
   DialogContent,
   DialogTitle,
   DialogFooter,
+  DialogClose,
+  DialogDescription,
 } from "../ui/dialog";
-import { DialogClose, DialogDescription } from "@radix-ui/react-dialog";
 import { TypographyUL } from "../typography";
 import AnchorText from "../typography/anchor-text";
 import LoomEmbed from "./loom-embed";
@@ -26,14 +27,16 @@ export default function PortfolioCardDetailsDialog({
       <DialogTrigger asChild>
         <Button size="sm">View Details</Button>
       </DialogTrigger>
-      <DialogContent className="overflow-y-scroll max-h-screen">
+      <DialogContent className="overflow-y-scroll">
         <DialogHeader className="gap-2">
           <DialogTitle>{item.title}</DialogTitle>
           {item.loomUrl && <LoomEmbed url={item.loomUrl} />}
           {item.youtubeEmbedUrl && (
             <YoutubeEmbed embedUrl={item.youtubeEmbedUrl} />
           )}
-          <DialogDescription>{item.longDescription}</DialogDescription>
+          <DialogDescription className="font-body">
+            {item.longDescription}
+          </DialogDescription>
           <TypographyUL>
             {item.links.map((link) => (
               <li key={link.url}>

@@ -24,9 +24,6 @@
 // import { StaticImageData } from 'next/image'
 
 export enum PortfolioItemTag {
-  // Styling
-  SASS = "sass",
-  TAILWINDCSS = "tailwindcss",
   // Language
   GO = "go",
   TYPESCRIPT = "typescript",
@@ -34,6 +31,7 @@ export enum PortfolioItemTag {
   RUST = "rust",
   HASKELL = "haskell",
   JAVA = "java",
+  TERRAFORM = "terraform",
   // Frontend
   REACT = "react",
   REACT_NATIVE = "react native",
@@ -78,9 +76,30 @@ export type PortfolioItem = {
 
 export const projects: PortfolioItem[] = [
   {
+    title: "Knowted v2",
+    shortDescription:
+      "Knowted is a student participation tracking application that professors can use to evaluate student engagement in the classroom. With this iteration, I focused on performance and best practices.",
+    longDescription:
+      "In my sophomore year of college, I built the first iteration of Knowted, which represented a significant milestone in my journey as a fullstack software developer. However, I became busy in my junior and senior years, so I had to put the project on the backburner. Following my college graduation, though, I returned to working on this passion project, this time using it to learn new technologies like Docker, Terraform, and Linux VPS configuration.",
+    emoji: "🙋‍♀️",
+    links: [],
+    tags: [
+      PortfolioItemTag.FULLSTACK,
+      PortfolioItemTag.REACT,
+      PortfolioItemTag.TYPESCRIPT,
+      PortfolioItemTag.GO,
+      PortfolioItemTag.POSTGRESQL,
+      PortfolioItemTag.REST_API,
+      PortfolioItemTag.TERRAFORM,
+      PortfolioItemTag.DOCKER,
+    ],
+    youtubeEmbedUrl:
+      "https://www.youtube.com/embed/JsT8AJUUn2k?si=BApOTB8dP4pxYbS8",
+  },
+  {
     title: "hngr",
     shortDescription:
-      "Hngr is a social platform for foodies, built for iOS, that has become my most ambitious application development and engineering management project.",
+      "Hngr is a social platform for foodies, built for iOS, that represents one of my most ambitious application development and engineering management projects.",
     longDescription:
       "Hngr is a peer-to-peer restaurant recommendation and review platform. Like other vertical social platforms such as Goodreads for books and Letterboxd for movies, hngr provides a social space for foodies to share and discover restaurant experiences. I was the sole developer of hngr for the first four months, implementing the groundwork features and architecture for the application. Now, I lead three other developers on the project as manager and scrummaster; we meet for standup three times weekly and work in 2-week sprints. We've implemented hngr with Expo (React Native) and TypeScript on the frontend, Node.js with TypeScript and Express on the backend, and services like Planetscale to store app data and the Foursquare Places API for restaurant data. The team plans to launch hngr to our waitlist of users sometime in the winter or spring. ",
     emoji: "🍽️",
@@ -90,7 +109,6 @@ export const projects: PortfolioItem[] = [
       PortfolioItemTag.FULLSTACK,
       PortfolioItemTag.REACT_NATIVE,
       PortfolioItemTag.TYPESCRIPT,
-      PortfolioItemTag.TAILWINDCSS,
       PortfolioItemTag.ZUSTAND,
       PortfolioItemTag.NODEJS,
       PortfolioItemTag.EXPRESSJS,
@@ -99,7 +117,7 @@ export const projects: PortfolioItem[] = [
       PortfolioItemTag.AGILE,
     ],
     youtubeEmbedUrl:
-      "https://www.youtube.com/embed/qc4yJOIwsgM?si=_E2qCtjzgcZ9LNpa",
+      "https://www.youtube.com/embed/YIwj3hwv3zQ?si=cEpETuoTpvpabnNZ",
   },
   {
     title: "hson",
@@ -241,7 +259,6 @@ export const projects: PortfolioItem[] = [
       PortfolioItemTag.FULLSTACK,
       PortfolioItemTag.REACT,
       PortfolioItemTag.TYPESCRIPT,
-      PortfolioItemTag.TAILWINDCSS,
       PortfolioItemTag.NEXTJS,
       PortfolioItemTag.FIREBASE,
     ],
@@ -272,7 +289,6 @@ export const projects: PortfolioItem[] = [
       PortfolioItemTag.FRONTEND,
       PortfolioItemTag.REACT,
       PortfolioItemTag.TYPESCRIPT,
-      PortfolioItemTag.TAILWINDCSS,
       PortfolioItemTag.NEXTJS,
       PortfolioItemTag.XSTATE,
     ],
@@ -341,7 +357,6 @@ export const professionalExperiences: PortfolioItem[] = [
       PortfolioItemTag.REACT,
       PortfolioItemTag.REDUX,
       PortfolioItemTag.TYPESCRIPT,
-      PortfolioItemTag.SASS,
       PortfolioItemTag.JAVA,
       PortfolioItemTag.JAVA_SPRING,
       PortfolioItemTag.MYSQL,
