@@ -34,8 +34,8 @@
 
     --radius: 0.5rem;
 
-    --highlight: #ec4899;
-    --highlight-hover: #be185d;
+    --highlight: #b626a5;
+    --highlight-hover: #7e1771;
 
     --highlight-secondary: #fcd34d;
     --highlight-secondary-hover: #f59e0b;
@@ -70,8 +70,8 @@
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
 
-    --highlight: #ec4899;
-    --highlight-hover: #be185d;
+    --highlight: #b626a5;
+    --highlight-hover: #7e1771;
 
     --highlight-secondary: #fbbf24;
     --highlight-secondary-hover: #d97706;

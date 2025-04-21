@@ -7,7 +7,7 @@ const config: DefaultSeoProps = {
   defaultTitle: "Parker's Digital Domain",
   description: "A portfolio of Parker's projects and writings.",
   canonical: "https://parkerlandon.com",
-  themeColor: "#db2777",
+  themeColor: "#b626a5",
   additionalMetaTags: [
     { property: "author", content: "Parker Landon" },
     {

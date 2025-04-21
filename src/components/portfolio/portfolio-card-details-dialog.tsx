@@ -49,7 +49,9 @@ export default function PortfolioCardDetailsDialog({
         </DialogHeader>
         <DialogFooter>
           <DialogClose>
-            <Button variant="secondary">Close</Button>
+            <Button variant="secondary" size="sm">
+              Close
+            </Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>

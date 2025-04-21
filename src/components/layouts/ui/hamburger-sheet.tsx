@@ -22,7 +22,7 @@ export default function HamburgerSheet({ menuItems }: HamburgerSheetProps) {
           <HamburgerMenuIcon strokeWidth={12} />
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex flex-col items-start gap-6" side="left">
+      <SheetContent className="flex flex-col items-start gap-6" side="right">
         <Link href="/">
           <Image
             src={LordlyLogo}
