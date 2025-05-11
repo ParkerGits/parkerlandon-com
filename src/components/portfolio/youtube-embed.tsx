@@ -1,15 +1,17 @@
-import * as loom from "@loomhq/loom-embed";
-import { useEffect, useState } from "react";
-import { Skeleton } from "../ui/skeleton";
+import { cn } from "@/lib/utils";
 
 type YoutubeEmbedProps = {
   embedUrl: string;
+  className?: string;
 };
 
-export default function YoutubeEmbed({ embedUrl }: YoutubeEmbedProps) {
+export default function YoutubeEmbed({
+  embedUrl,
+  className,
+}: YoutubeEmbedProps) {
   return (
     <iframe
-      className="w-full aspect-video"
+      className={cn("w-full aspect-video", className)}
       src={embedUrl}
       title="YouTube video player"
       frameBorder="0"

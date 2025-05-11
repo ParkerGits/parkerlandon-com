@@ -1,5 +1,6 @@
 export enum PostTopic {
   HASKELL = "haskell",
+  GO = "go",
   FUNCTIONAL_PROGRAMMING = "functional programming",
   PARSERS = "parsers",
   INTERPRETERS = "interpreters",
@@ -7,11 +8,13 @@ export enum PostTopic {
   FULLSTACK = "fullstack",
   TERRAFORM = "terraform",
   INFRASTRUCTURE = "infrastructure",
+  PATTERNS = "patterns",
   UNKNOWN = "unknown",
 }
 
 const topics = {
   haskell: PostTopic.HASKELL,
+  go: PostTopic.GO,
   "functional programming": PostTopic.FUNCTIONAL_PROGRAMMING,
   parsers: PostTopic.PARSERS,
   interpreters: PostTopic.INTERPRETERS,
@@ -19,6 +22,7 @@ const topics = {
   terraform: PostTopic.TERRAFORM,
   infrastructure: PostTopic.INFRASTRUCTURE,
   fullstack: PostTopic.FULLSTACK,
+  patterns: PostTopic.PATTERNS,
 } as const;
 
 type Topic = keyof typeof topics;
