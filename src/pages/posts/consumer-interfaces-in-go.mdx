@@ -25,7 +25,7 @@ In this video, I develop an API endpoint for fetching books and demonstrate how 
 
 The `controller` package is responsible for receiving the HTTP request and writing a response.
 
-For example, the `BookController` is handles an HTTP request for all books (e.g., `GET /books`). The signature of `HandleGetAllBooks` reveals that it accepts the HTTP `Request` and `ResponseWriter` types as arguments.
+For example, the `BookController` handles an HTTP request for all books (i.e., `GET /books`) by accepting the HTTP `Request` and `ResponseWriter` types as arguments.
 
 ```go
 type BookController interface {
@@ -35,13 +35,18 @@ type BookController interface {
 
 #### The Service
 
-The `service` package is responsible for the "business logic." The `controller` package calls into the `service` package with parameters from the HTTP request to construct the appropriate response.
+The `service` package is responsible for the "business logic." The `controller` package calls into methods of the `service` package with parameters from the HTTP request, and the `service` methods fetch and map the data before returning it to the `controller` to construct the appropriate HTTP response.
 
-For example, the `BookService` exposes a method `GetAllBooks` that returns a slice of books.
+For example, the `BookService` exposes a method `GetAllBooks` that returns a slice of books. An implementation of the `HandleGetAllBooks` controller method could call this `GetAllBooks` service method to fetch the necessary books for the response.
 
 ```go
 type BookService interface {
 	GetAllBooks(ctx context.Context) ([]query.Book, error)
+}
+
+func (c *BookControllerImpl) HandleGetAllBooks(w http.ResponseWriter, r *http.Request) {
+	books, err := c.bookService.GetAllBooks(r.Context())
+	// ... write a response containing `books`
 }
 ```
 
@@ -49,7 +54,7 @@ type BookService interface {
 
 The `repository` package is responsible for fetching data from persistent data stores. The `service` package calls into the `repository` package for the requisite data before it maps and returns a result to the `controller`.
 
-Since my simple Book route example doesn't do any data mapping in the `service` layer, the `BookRepository` interface looks the same as the `BookService`.
+Since my simple Book route example doesn't do any data mapping in the `service` layer, the `BookRepository` interface looks the same as `BookService`. However, an implementation of the `BookRepository` method would make database queries or call into an ORM.
 
 
 ```go
